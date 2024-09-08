@@ -1,0 +1,5 @@
+*.o
+f
+*.bin
+*.so
+build/
