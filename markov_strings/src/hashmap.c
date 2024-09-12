@@ -6,6 +6,7 @@
 
 #ifdef __cplusplus
 #include <cstring>
+#include <cstdlib>
 #endif
 
 
@@ -18,8 +19,12 @@ uint32_t crc32(unsigned char *pucBuff, int iLen)
     return crc ^ 0xFFFFFFFF;
 }
 
-uint32_t hash_function(unsigned char* buf){
-    return crc32(buf, strlen(buf));
+uint32_t hash_function(unsigned char* buf, size_t size){
+    return crc32(buf, size) % MAP_SIZE;
+}
+
+string_hashmap_unit string_hashmap_unit_create(char* string, size_t size){
+    return (string_hashmap_unit){.string = string, .size = size, .hash = hash_function(string, size)};
 }
 
 /* сейчас я сделаю статическую таблицу, потом переделаю в динамическую, как Янчик завещал */
@@ -30,17 +35,19 @@ HashMap hashmap_create(){
     return map;
 }
 
-MapValue hashmap_get(HashMap map, const char* key){
-    uint32_t hash = hash_function(key) % MAP_SIZE;
+MapValue hashmap_get(HashMap map, uint32_t hash){
     MapValue value = map.values[hash];
     /* if (value.size == 0)return NULL; */
     return value;
 }
 
-void hashmap_set(HashMap map, const char* key, const char* value){
-    uint32_t hash = hash_function(key) % MAP_SIZE;
-    MapValue* arr = &map.values[hash];
-    if (arr->size == 0)
-        array_new(arr);
-    array_append(arr, value);
+void hashmap_set(HashMap map, string_hashmap_unit key, string_hashmap_unit value){
+    uint32_t key_hash = key.hash;// hash_function(key, strlen(key));
+
+    MapValue* arr = &map.values[key_hash];
+    /* string_hashmap value_string_hash = string_hashmap_create(value); */
+
+    if (arr->size == 0) // мы каллокаем массив поэтому похуй
+        array_new(arr, string_hashmap_unit);
+    array_append(arr, &value, string_hashmap_unit);
 }

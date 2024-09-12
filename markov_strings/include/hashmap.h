@@ -1,16 +1,37 @@
-#ifndef HASH_TABLE_H
-#define HASH_TABLE_H
+#ifndef HASHMAP_H
+#define HASHMAP_H
 
 #include "array.h"
+/* #include "types.h" */
+#include <stdint.h>
+
+#ifdef __cplusplus
+#include <cstring>
+#include <cstdlib>
+#endif
 
 // must be prime
 #define MAP_SIZE 20011
 
-typedef Array MapValue;
+typedef struct {
+    char* string;
+    size_t size;
+    uint32_t hash;
+} string_hashmap_unit;
+
+
+DEFINE_ARRAY_GENERIC(string_hashmap_unit);
+
+typedef Array(string_hashmap_unit) MapValue;
 
 typedef struct {
     MapValue* values;
 } HashMap;
 
+HashMap hashmap_create();
+MapValue hashmap_get(HashMap map, uint32_t hash);
+void hashmap_set(HashMap map, string_hashmap_unit key, string_hashmap_unit value);
+
+string_hashmap_unit string_hashmap_unit_create(char* string, size_t size);
 
 #endif
