@@ -22,19 +22,27 @@
 /* void array_delete(Array* arr); */
 /* void array_append(Array* arr, void* new_element, size_t element_size); */
 
-
-#define DEFINE_ARRAY_GENERIC(array_element_type)                                                            \
+#define DEFINE_ARRAY_GENERIC_h(array_element_type)                                                          \
 typedef struct {                                                                                            \
     size_t size;                                                                                            \
     size_t capacity;                                                                                        \
     array_element_type* elements;                                                                           \
 } __Array##array_element_type;                                                                              \
                                                                                                             \
+void __array_append_##array_element_type(__Array##array_element_type* arr, void* new_element);              \
+                                                                                                            \
+void __array_new##array_element_type(__Array##array_element_type* arr);                                     \
+                                                                                                            \
+array_element_type __get_array_random_element_##array_element_type(Array(array_element_type) arr);          \
+
+
+#define DEFINE_ARRAY_GENERIC_c(array_element_type)                                                          \
+                                                                                                            \
 void __array_append_##array_element_type(__Array##array_element_type* arr, void* new_element){              \
     assert(arr != NULL);                                                                                    \
     assert(arr->elements != NULL);                                                                          \
                                                                                                             \
-    if (arr->size == (1 << arr->capacity) * ARRAY_CAPACITY * sizeof(array_element_type)){                   \
+    if (arr->size == (1 << arr->capacity) * ARRAY_CAPACITY){                                                \
         arr->elements = realloc(arr->elements, ( 1 << (arr->capacity + 1)) * ARRAY_CAPACITY * sizeof(array_element_type)); \
         arr->capacity++;                                                                                    \
     }                                                                                                       \
@@ -48,16 +56,24 @@ void __array_new##array_element_type(__Array##array_element_type* arr){         
     arr->size = 0;                                                                                          \
     arr->capacity = 0;                                                                                      \
     arr->elements = calloc(sizeof(array_element_type), ARRAY_CAPACITY);                                     \
-}
+}                                                                                                           \
+                                                                                                            \
+array_element_type __get_array_random_element_##array_element_type(Array(array_element_type) arr){          \
+    return arr.elements[rand() % arr.size];                                                                 \
+}                                                                                                           \
+
+
 
 #define Array(array_element_type) __Array##array_element_type
 
 #define array_append(arr, new_element, array_element_type) __array_append_##array_element_type(arr, new_element)
 #define array_new(arr, array_element_type) __array_new##array_element_type(arr)
 
+#define array_get_random_element(arr, array_element_type) __get_array_random_element_##array_element_type(arr)
 
 /* DEFINE_ARRAY_GENERIC(string_hashmap_unit); */
 /* Array(int) arr = {1,3,4,5}; */
+
 
 
 #endif

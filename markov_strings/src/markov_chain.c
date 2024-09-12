@@ -3,6 +3,7 @@
 #include "markov_chain.h"
 #include "random.h"
 
+
 void generate_words_hashmap(char* text, int text_size, HashMap map){
     assert(text != NULL);
 
@@ -13,11 +14,12 @@ void generate_words_hashmap(char* text, int text_size, HashMap map){
 
     for (int symbol_index = 0; symbol_index < text_size; symbol_index++){
         char symbol = text[symbol_index];
-        if (symbol == ' ' && current_word_size == 0){
-            continue;
-        }
+        /* if (symbol == ' ' && current_word_size == 0){ */
+        /*     continue; */
+        /* } */
 
-        if (strchr(" \n[](){}!?.,:;'\"/*&^%$_+-–—=<>@|~", symbol)){
+        // TODO: обработать ' и "
+        if (strchr(" \n[](){}!?.,:;/*&^%$_+-–—=<>@|~", symbol)){
             // save current word
             if (current_word_size > 0){ 
                 current_word_hashmap = string_hashmap_unit_create(current_word, current_word_size);
@@ -27,7 +29,7 @@ void generate_words_hashmap(char* text, int text_size, HashMap map){
             // save current special char
             // TODO: process ... and quotes
             if (!strchr(" (){}[]", symbol)){
-                current_word_hashmap = string_hashmap_unit_create(&symbol, 1);
+                current_word_hashmap = string_hashmap_unit_create(&text[symbol_index], 1);
                 hashmap_set(map, past_word_hashmap, current_word_hashmap);
                 past_word_hashmap = current_word_hashmap;
             }
@@ -47,7 +49,10 @@ string_hashmap_unit generate_next_unit(string_hashmap_unit current_word, HashMap
 
 void write_nonsense_to_stream(FILE *stream, int words_count, HashMap map, string_hashmap_unit start_word){
     while (words_count--){
+        /* for (int i =0; i< start_word.size; i++)fprintf(stderr, "%c", start_word.string[i]); */
+        /* fprintf(stderr, " "); */
         fwrite(start_word.string, sizeof(char), start_word.size, stream);
+        fwrite(" ", sizeof(char), 1, stream);
         start_word = generate_next_unit(start_word, map);
     }
 }

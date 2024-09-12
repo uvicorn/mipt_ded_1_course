@@ -1,3 +1,4 @@
+#include <stdio.h>
 #pragma GCC target("avx2")
 #include "hashmap.h"
 #include <immintrin.h>
@@ -9,6 +10,7 @@
 #include <cstdlib>
 #endif
 
+DEFINE_ARRAY_GENERIC_c(string_hashmap_unit);
 
 uint32_t crc32(unsigned char *pucBuff, int iLen)
 {
@@ -42,6 +44,12 @@ MapValue hashmap_get(HashMap map, uint32_t hash){
 }
 
 void hashmap_set(HashMap map, string_hashmap_unit key, string_hashmap_unit value){
+    /* fprintf(stderr, "W5ITE_HASHMAP %d %d: ", key.size, value.size); */
+    /* for (int i =0;i<key.size;i++)fprintf(stderr, "%c", key.string[i]); */
+    /* fprintf(stderr, " -> "); */
+    /* for (int i =0;i<value.size;i++)fprintf(stderr, "%c", value.string[i]); */
+    /* fprintf(stderr, "\n"); */
+
     uint32_t key_hash = key.hash;// hash_function(key, strlen(key));
 
     MapValue* arr = &map.values[key_hash];
@@ -49,5 +57,6 @@ void hashmap_set(HashMap map, string_hashmap_unit key, string_hashmap_unit value
 
     if (arr->size == 0) // мы каллокаем массив поэтому похуй
         array_new(arr, string_hashmap_unit);
+    /* fprintf(stderr, "ARR_DEBUG %d\n", arr->size); */
     array_append(arr, &value, string_hashmap_unit);
 }

@@ -20,7 +20,7 @@ typedef struct {
 } string_hashmap_unit;
 
 
-DEFINE_ARRAY_GENERIC(string_hashmap_unit);
+DEFINE_ARRAY_GENERIC_h(string_hashmap_unit);
 
 typedef Array(string_hashmap_unit) MapValue;
 

@@ -4,7 +4,7 @@
 #include "hashmap.h"
 #include "io.h"
 #include "markov_chain.h"
-
+#include <time.h>
 #include "random.h"
 
 #ifdef __cplusplus
@@ -21,8 +21,9 @@
 
 
 int main(int argc, char* argv[]){
-    int file_num = argc - 1;
+    srand(time(0));
 
+    int file_num = argc - 1;
     if (file_num > 0){
         char** file_names = argv + 1;
         int file_sizes[file_num];
@@ -41,16 +42,18 @@ int main(int argc, char* argv[]){
 
         char* text = malloc(sum_file_size);
         read_files_to_buffer(file_names, file_sizes, file_num, text);
-        printf("OUTPUT: %s", text);
+        /* printf("OUTPUT: %s", text); */
 
         HashMap marcov_chain_word_map = hashmap_create();
         generate_words_hashmap(text, sum_file_size, marcov_chain_word_map);
         // TODO переписать эту хуйню
-        FILE* output_stream = fopen("output.txt", "w");
+        FILE* output_stream = fopen("output_manifesto.txt", "w");
         char buf[1024];
         setvbuf(output_stream, buf, _IOFBF, sizeof(buf));
-        string_hashmap_unit start_word = string_hashmap_unit_create("every", 5);
-        write_nonsense_to_stream(output_stream, 2000, marcov_chain_word_map, start_word);
+        
+        char* start_word = "weapons";
+        string_hashmap_unit start_word_unit = string_hashmap_unit_create(start_word, strlen(start_word));
+        write_nonsense_to_stream(output_stream, 2000, marcov_chain_word_map, start_word_unit);
 
         fclose(output_stream);
     } else {
