@@ -53,10 +53,8 @@ void hashmap_set(HashMap map, string_hashmap_unit key, string_hashmap_unit value
     uint32_t key_hash = key.hash;// hash_function(key, strlen(key));
 
     MapValue* arr = &map.values[key_hash];
-    /* string_hashmap value_string_hash = string_hashmap_create(value); */
 
     if (arr->size == 0) // мы каллокаем массив поэтому похуй
         array_new(arr, string_hashmap_unit);
-    /* fprintf(stderr, "ARR_DEBUG %d\n", arr->size); */
     array_append(arr, &value, string_hashmap_unit);
 }

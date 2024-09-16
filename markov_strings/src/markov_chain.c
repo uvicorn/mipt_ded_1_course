@@ -14,9 +14,6 @@ void generate_words_hashmap(char* text, int text_size, HashMap map){
 
     for (int symbol_index = 0; symbol_index < text_size; symbol_index++){
         char symbol = text[symbol_index];
-        /* if (symbol == ' ' && current_word_size == 0){ */
-        /*     continue; */
-        /* } */
 
         // TODO: обработать ' и "
         if (strchr(" \n[](){}!?.,:;/*&^%$_+-–—=<>@|~", symbol)){

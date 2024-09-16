@@ -42,9 +42,9 @@ void __array_append_##array_element_type(__Array##array_element_type* arr, void*
     assert(arr != NULL);                                                                                    \
     assert(arr->elements != NULL);                                                                          \
                                                                                                             \
-    if (arr->size == (1 << arr->capacity) * ARRAY_CAPACITY){                                                \
-        arr->elements = realloc(arr->elements, ( 1 << (arr->capacity + 1)) * ARRAY_CAPACITY * sizeof(array_element_type)); \
-        arr->capacity++;                                                                                    \
+    if (arr->size == arr->capacity){                                                                        \
+        arr->capacity <<= 1;                                                                                \
+        arr->elements = realloc(arr->elements, arr->capacity * sizeof(array_element_type));                 \
     }                                                                                                       \
     memcpy(&arr->elements[arr->size], new_element, sizeof(array_element_type));                             \
     arr->size++;                                                                                            \
@@ -54,8 +54,16 @@ void __array_new##array_element_type(__Array##array_element_type* arr){         
     assert(arr != NULL);                                                                                    \
                                                                                                             \
     arr->size = 0;                                                                                          \
-    arr->capacity = 0;                                                                                      \
+    arr->capacity = ARRAY_CAPACITY;                                                                         \
     arr->elements = calloc(sizeof(array_element_type), ARRAY_CAPACITY);                                     \
+}                                                                                                           \
+void __array_delete##array_element_type(__Array##array_element_type* arr){                                  \
+    assert(arr != NULL);                                                                                    \
+                                                                                                            \
+    arr->size = 0;                                                                                          \
+    arr->capacity = 0;                                                                                      \
+    free(arr->elements);                                                                                    \
+    arr->elements = NULL;                                                                                   \
 }                                                                                                           \
                                                                                                             \
 array_element_type __get_array_random_element_##array_element_type(Array(array_element_type) arr){          \

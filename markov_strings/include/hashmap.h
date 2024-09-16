@@ -2,7 +2,6 @@
 #define HASHMAP_H
 
 #include "array.h"
-/* #include "types.h" */
 #include <stdint.h>
 
 #ifdef __cplusplus
