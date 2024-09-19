@@ -1,7 +1,6 @@
 #include "hashmap.h"
 #include <stdio.h>
 #include "markov_chain.h"
-#include "random.h"
 
 
 void generate_words_hashmap(char* text, int text_size, HashMap map){
@@ -46,8 +45,6 @@ string_hashmap_unit generate_next_unit(string_hashmap_unit current_word, HashMap
 
 void write_nonsense_to_stream(FILE *stream, int words_count, HashMap map, string_hashmap_unit start_word){
     while (words_count--){
-        /* for (int i =0; i< start_word.size; i++)fprintf(stderr, "%c", start_word.string[i]); */
-        /* fprintf(stderr, " "); */
         fwrite(start_word.string, sizeof(char), start_word.size, stream);
         fwrite(" ", sizeof(char), 1, stream);
         start_word = generate_next_unit(start_word, map);

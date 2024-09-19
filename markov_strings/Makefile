@@ -1,7 +1,7 @@
 CC=g++
 INCLUDE_DIR = include
 # CFLAGS = -lm -I $(INCLUDE_DIR)
-CFLAGS=-Wall -Wextra -Wpedantic  -I $(INCLUDE_DIR) -fpermissive
+CFLAGS=-Wall -Wextra -Wpedantic  -I $(INCLUDE_DIR) -fpermissive -DDEBUG
 #-fsanitize=address -Og -DDEBUG -ggdb -D_FORTIFY_SOURCE=2 -lgtest -fpermissive -lstdc++
 TEST_CFLAGS=-Wall -Wextra -Wpedantic -lm  -I $(INCLUDE_DIR)
 LDFLAGS=$(CFLAGS)

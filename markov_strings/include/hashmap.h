@@ -18,10 +18,21 @@ typedef struct {
     uint32_t hash;
 } string_hashmap_unit;
 
+typedef struct {
+    char* start;
+    char* end;
+    size_t size;
+} string;
+
+typedef char* charptr;
 
 DEFINE_ARRAY_GENERIC_h(string_hashmap_unit);
+DEFINE_ARRAY_GENERIC_h(string);
+DEFINE_ARRAY_GENERIC_h(charptr);
 
 typedef Array(string_hashmap_unit) MapValue;
+typedef Array(string) ArrayString;
+typedef Array(charptr) ArrayCharPtr;
 
 typedef struct {
     MapValue* values;

@@ -1,8 +1,10 @@
 #include <stdio.h>
+#include <sys/stat.h>
 #include "io.h"
 
 #ifdef __cplusplus
 #include <cassert>
+#include <cstdlib>
 #endif
 
 
@@ -17,9 +19,36 @@ void read_file_to_buffer(const char* filename, int fsize, char* buffer){
     }
 }
 
-void read_files_to_buffer(const char** filenames, const int* file_sizes, int file_num, char* buffer){
+void read_files_to_buffer(const char** filenames, const size_t* file_sizes, int file_num, char* buffer){
     for (int file_index = 0; file_index < file_num; file_index++){
         read_file_to_buffer(filenames[file_index], file_sizes[file_index], buffer);
         buffer += file_sizes[file_index];
     }
+}
+
+size_t get_file_sizes(const char** file_names, size_t* file_sizes, int file_num){
+    size_t sum_file_size = 0;
+
+    for (int file_index = 0; file_index < file_num; file_index++){
+        char* filename = file_names[file_index];
+
+        struct stat st;
+        stat(filename, &st);
+        int file_size = st.st_size;
+
+        file_sizes[file_index] = file_size;
+        sum_file_size += file_size;
+    }
+    return sum_file_size;
+}
+
+size_t merge_read_files_to_buffer(const char** file_names, int file_num, char** text){
+    size_t file_sizes[file_num];
+    size_t sum_file_size = get_file_sizes(file_names, file_sizes, file_num);
+
+    *text = malloc(sum_file_size + 1);
+    *text[0] = '\0';
+    read_files_to_buffer(file_names, file_sizes, file_num, ++*text);
+
+    return sum_file_size;
 }

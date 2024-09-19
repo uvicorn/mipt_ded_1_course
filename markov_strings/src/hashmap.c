@@ -11,6 +11,8 @@
 #endif
 
 DEFINE_ARRAY_GENERIC_c(string_hashmap_unit);
+DEFINE_ARRAY_GENERIC_c(string);
+DEFINE_ARRAY_GENERIC_c(charptr);
 
 uint32_t crc32(unsigned char *pucBuff, int iLen)
 {
@@ -44,12 +46,6 @@ MapValue hashmap_get(HashMap map, uint32_t hash){
 }
 
 void hashmap_set(HashMap map, string_hashmap_unit key, string_hashmap_unit value){
-    /* fprintf(stderr, "W5ITE_HASHMAP %d %d: ", key.size, value.size); */
-    /* for (int i =0;i<key.size;i++)fprintf(stderr, "%c", key.string[i]); */
-    /* fprintf(stderr, " -> "); */
-    /* for (int i =0;i<value.size;i++)fprintf(stderr, "%c", value.string[i]); */
-    /* fprintf(stderr, "\n"); */
-
     uint32_t key_hash = key.hash;// hash_function(key, strlen(key));
 
     MapValue* arr = &map.values[key_hash];
