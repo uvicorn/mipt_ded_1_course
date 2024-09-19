@@ -47,14 +47,20 @@ int main(int argc, char* argv[]){
             write_nonsense_to_stream(output_stream, commandline_args.nonsense_words_count, marcov_chain_word_map, start_word_unit);
 
         } else if (commandline_args.mode == Qsort){
-            ArrayCharPtr lines;
-            array_new(&lines, charptr);
+            Array(string) lines;
+            array_new(&lines, string);
 
             char* start = text;
             for(int symbol_index = 0; symbol_index < sum_file_size; symbol_index++){
                 if (text[symbol_index] == '\n'){
                     text[symbol_index] = '\0';
-                    array_append(&lines, &start, charptr);
+                    array_append(&lines, &start, string);
+
+                    char*  end  = text + symbol_index - 1;
+                    size_t size = end - start + 1;
+                    string line = {.start = start, .end = end, .size = size};
+                    array_append(&lines, &line, string);
+
                     start = text + symbol_index + 1;
                 }
             }
@@ -63,7 +69,7 @@ int main(int argc, char* argv[]){
             /* for (int line = 0; line < lines.size; line++){ */
             /*     printf("%s\n", lines.elements[line]); */
             /* } */
-            sort_strings(lines.elements, lines.size);
+            sort_strings(lines);
             for (int line = 0; line < lines.size; line++){
                 printf("%s\n", lines.elements[line]);
             }

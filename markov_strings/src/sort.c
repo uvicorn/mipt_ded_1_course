@@ -1,5 +1,6 @@
 #include <stddef.h>
 #include <stdio.h>
+#include "hashmap.h"
 
 #ifdef __cplusplus
 #include <cstring>
@@ -14,8 +15,8 @@ int comparator(const void* arg1, const void* arg2){
     /* fprintf(stderr, "compare %s %s\n", a, b); */
     /* return strcmp(a, b); */
     while (*a && (*a++ == *b++) ){
-        while (strchr(special_symbols, a) && *a )a++;
-        while (strchr(special_symbols, b) && *b )b++;
+        while (strchr(special_symbols, *a) && *a )a++;
+        while (strchr(special_symbols, *b) && *b )b++;
         /* fprintf(stderr, "HUILO %llu %llu\n", a,b); */
     }
     return *(const unsigned char*)(--a) - *(const unsigned char*)(--b);
@@ -27,11 +28,11 @@ int back_comparator(const void* arg1, const void* arg2){
 }
 
 
-void sort_strings(char** string_array, size_t count){
-    qsort(string_array, count, sizeof(char*), comparator);
+void sort_strings(Array(string) string_array){
+    qsort(string_array.elements, string_array.size, sizeof(string), comparator);
 }
 
-void back_sort_strings(char** string_array, size_t count){
-    qsort(string_array, count, sizeof(char*), back_comparator);
-}
+/* void back_sort_strings(char** string_array, size_t count){ */
+/*     qsort(string_array, count, sizeof(char*), back_comparator); */
+/* } */
 /* int back_comparator(); */
