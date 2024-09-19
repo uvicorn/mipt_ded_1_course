@@ -2,8 +2,13 @@
 #define SORT_H
 
 #include <stddef.h>
-#include "hashmap.h"
+#include "string_proc.h"
 
-void sort_strings(Array(string) string_array);
+typedef enum {
+    Back,
+    Forward
+} SortMode;
+
+void sort_strings(Array(string) string_array, SortMode mode);
 
 #endif

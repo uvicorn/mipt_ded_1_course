@@ -1,5 +1,8 @@
+#include <stddef.h>
 #include <stdio.h>
 #include <sys/stat.h>
+#include "array.h"
+#include "hashmap.h"
 #include "io.h"
 
 #ifdef __cplusplus
@@ -52,3 +55,21 @@ size_t merge_read_files_to_buffer(const char** file_names, int file_num, char** 
 
     return sum_file_size;
 }
+
+void write_strings_to_stream(FILE* stream, Array(string) string_array){
+    assert(string_array.size > 0);
+
+    for(size_t line_num = 0; line_num < string_array.size; line_num++){
+        string line = string_array.elements[line_num];
+        assert(line.start != NULL);
+
+        fwrite(line.start, sizeof(char), line.size, stream);
+        fwrite("\n", sizeof(char), 1, stream);
+    }
+}
+
+/* void create_output_stream(FILE** stream, char* filename){ */
+/*     *stream = fopen(filename, "w"); */
+/*     char* tmpbuf = malloc(TMP_BUF_SIZE); */
+/*     setvbuf(*stream, tmpbuf, _IOFBF, TMP_BUF_SIZE); */
+/* } */

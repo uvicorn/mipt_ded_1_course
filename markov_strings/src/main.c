@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include "array.h"
 #include "hashmap.h"
+#include "string_proc.h"
 #include "io.h"
 #include "markov_chain.h"
 #include <time.h>
@@ -31,48 +32,34 @@ int main(int argc, char* argv[]){
     int file_num = commandline_args.file_num;
 
 
-    if (file_num > 0 && commandline_args.mode != None){
-        FILE* output_stream = fopen("output.txt", "w");
+    if (file_num > 0 && commandline_args.program_mode != None){
+
+        assert(commandline_args.output_filename != NULL);
+        FILE* output_stream = fopen(commandline_args.output_filename, "w");
         char tmpbuf[1024];
         setvbuf(output_stream, tmpbuf, _IOFBF, sizeof(tmpbuf));
 
         char* text = NULL;
         size_t sum_file_size = merge_read_files_to_buffer(commandline_args.files, file_num, &text);
-        
-        if (commandline_args.mode == MarkovNonsenseGenerator){
+
+        if (commandline_args.program_mode == MarkovNonsenseGenerator){
+            assert(commandline_args.start_word != NULL);
+
             HashMap marcov_chain_word_map = hashmap_create();
             generate_words_hashmap(text, sum_file_size, marcov_chain_word_map);
 
             string_hashmap_unit start_word_unit = string_hashmap_unit_create(commandline_args.start_word, strlen(commandline_args.start_word));
             write_nonsense_to_stream(output_stream, commandline_args.nonsense_words_count, marcov_chain_word_map, start_word_unit);
 
-        } else if (commandline_args.mode == Qsort){
+        } else if (commandline_args.program_mode == Qsort){
+
             Array(string) lines;
             array_new(&lines, string);
 
-            char* start = text;
-            for(int symbol_index = 0; symbol_index < sum_file_size; symbol_index++){
-                if (text[symbol_index] == '\n'){
-                    text[symbol_index] = '\0';
-                    array_append(&lines, &start, string);
+            split_text_to_lines(text, &lines, sum_file_size);
 
-                    char*  end  = text + symbol_index - 1;
-                    size_t size = end - start + 1;
-                    string line = {.start = start, .end = end, .size = size};
-                    array_append(&lines, &line, string);
-
-                    start = text + symbol_index + 1;
-                }
-            }
-
-            /* fprintf(stderr, "LINES_COUNT %d\n", lines.size); */
-            /* for (int line = 0; line < lines.size; line++){ */
-            /*     printf("%s\n", lines.elements[line]); */
-            /* } */
-            sort_strings(lines);
-            for (int line = 0; line < lines.size; line++){
-                printf("%s\n", lines.elements[line]);
-            }
+            sort_strings(lines, commandline_args.sort_mode);
+            write_strings_to_stream(output_stream, lines);
         }
 
         fclose(output_stream);

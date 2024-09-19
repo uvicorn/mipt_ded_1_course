@@ -7,16 +7,17 @@
 
 #ifdef __cplusplus
 #include <cassert>
+#include <cstring>
 #endif
 
 
 /* typedef char* array_element; */
 
-/* typedef struct { */
-/*     int size; */
-/*     int capacity; */
-/*     array_element* elements; */
-/* } Array; */
+typedef struct {
+    int size;
+    int capacity;
+    void* elements;
+} ArrayDefault;
 
 /* void array_new(Array* arr, size_t element_size); */
 /* void array_delete(Array* arr); */

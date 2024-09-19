@@ -11,8 +11,6 @@
 #endif
 
 DEFINE_ARRAY_GENERIC_c(string_hashmap_unit);
-DEFINE_ARRAY_GENERIC_c(string);
-DEFINE_ARRAY_GENERIC_c(charptr);
 
 uint32_t crc32(unsigned char *pucBuff, int iLen)
 {
