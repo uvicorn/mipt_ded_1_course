@@ -8,6 +8,7 @@
 #ifdef __cplusplus
 #include <cassert>
 #include <cstring>
+#include <cstdlib>
 #endif
 
 
@@ -70,6 +71,7 @@ void __array_delete##array_element_type(__Array##array_element_type* arr){      
 array_element_type __get_array_random_element_##array_element_type(Array(array_element_type) arr){          \
     return arr.elements[rand() % arr.size];                                                                 \
 }                                                                                                           \
+
 
 
 

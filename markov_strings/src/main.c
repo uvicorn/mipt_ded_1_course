@@ -36,7 +36,7 @@ int main(int argc, char* argv[]){
 
         assert(commandline_args.output_filename != NULL);
         FILE* output_stream = fopen(commandline_args.output_filename, "w");
-        char tmpbuf[1024];
+        char tmpbuf[TMP_BUF_SIZE];
         setvbuf(output_stream, tmpbuf, _IOFBF, sizeof(tmpbuf));
 
         char* text = NULL;
@@ -65,7 +65,7 @@ int main(int argc, char* argv[]){
         fclose(output_stream);
         free(--text);
     } else {
-        printf("Help: ./program --m Qsort --f textfile1.txt textfile2.txt ...");
+        printf("Help: ./program --m sort --f textfile1.txt textfile2.txt ...");
     }
     return 0;
 }
