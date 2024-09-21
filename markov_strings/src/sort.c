@@ -10,16 +10,19 @@
 
 const char* special_symbols = " \n[](){}!?.,:;/*&^%$_+-–—=<>@|~";
 
+inline void pass_special_symbols(char **a, char**b, int step){
+    while (strchr(special_symbols, **a) && **a) *a += step;
+    while (strchr(special_symbols, **b) && **b) *b += step;
+}
+
 int forward_string_comparator(const void* arg1, const void* arg2){
     const char* a = (*(string*)arg1).start;
     const char* b = (*(string*)arg2).start;
 
-    while (strchr(special_symbols, *a) && *a) a++;
-    while (strchr(special_symbols, *b) && *b) b++;
+    pass_special_symbols(&a, &b, +1);
 
     while (*a && (*a++ == *b++)){
-        while (strchr(special_symbols, *a) && *a) a++;
-        while (strchr(special_symbols, *b) && *b) b++;
+        pass_special_symbols(&a, &b, +1);
     }
 
     return *(const unsigned char*)(--a) - *(const unsigned char*)(--b);
@@ -29,12 +32,10 @@ int back_string_comparator(const void* arg1, const void* arg2){
     const char* a = (*(string*)arg1).end;
     const char* b = (*(string*)arg2).end;
 
-    while (strchr(special_symbols, *a) && *a) a--;
-    while (strchr(special_symbols, *b) && *b) b--;
+    pass_special_symbols(&a, &b, -1);
 
     while (*a && (*a-- == *b--)){
-        while (strchr(special_symbols, *a) && *a) a--;
-        while (strchr(special_symbols, *b) && *b) b--;
+        pass_special_symbols(&a, &b, -1);
     }
 
     return *(const unsigned char*)(++a) - *(const unsigned char*)(++b);
