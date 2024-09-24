@@ -5,7 +5,6 @@
 #include <stddef.h>
 #include "random.h"
 
-#define GETRANDOM_SYSCALL_NUMBER 318
 
 // 0) https://stackoverflow.com/questions/9506353/how-to-invoke-a-system-call-via-syscall-or-sysenter-in-inline-assembly
 // 1) https://wiki.osdev.org/Inline_Assembly
@@ -24,6 +23,8 @@ inline ssize_t getrandom(char* buf, size_t count, unsigned int flags){
     );
     return ret;
 }
+// МАМА Я ЛЮБЛЮ КОКАИН
+// МАМА Я ЛЮБЛЮ САТАНУ
 
 inline void generate_stack_canary(char* buf){
     getrandom(buf, sizeof(stack_element), NULL);

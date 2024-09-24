@@ -2,6 +2,6 @@
 #define RANDOM_H
 
 
-inline void generate_stack_canary(char* buf);
+void generate_stack_canary(char* buf);
 
 #endif
