@@ -18,12 +18,17 @@ typedef struct {
     /* size_t capacity; */
 } LLStack; // Linked List stack
 
+typedef enum {
+    NoError = 0,
+    CanaryCorrupted = 0b1,
+} LLStackErr;
 
 LLStack* LLStack_delete(LLStack* stack);
 LLStack* LLStack_new();
 
-void LLStack_push(LLStack* stack, stack_element element);
-stack_element LLStack_pop(LLStack* stack);
+LLStackErr LLStack_push(LLStack* stack, stack_element* element);
+LLStackErr LLStack_pop(LLStack* stack, stack_element* element);
+LLStackErr LLStack_top(LLStack* stack, stack_element* element);
 
 
 //

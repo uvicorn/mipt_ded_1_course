@@ -1,9 +1,9 @@
 CC=g++
 INCLUDE_DIR = include
 # CFLAGS = -lm -I $(INCLUDE_DIR)
-CFLAGS=-Wall -Wextra -Wpedantic  -I $(INCLUDE_DIR) -fpermissive -O2 -DDEBUG
+CFLAGS=-Wall -Wextra -Wpedantic  -I $(INCLUDE_DIR) -fpermissive -O2 -DDEBUG -lgtest -lstdc++ -D_FORTIFY_SOURCE=2
 #-fsanitize=address -Og -DDEBUG -ggdb -D_FORTIFY_SOURCE=2 -lgtest -fpermissive -lstdc++
-TEST_CFLAGS=-Wall -Wextra -Wpedantic -lm  -I $(INCLUDE_DIR)
+TEST_CFLAGS=-Wall -Wextra -Wpedantic -lm  -I $(INCLUDE_DIR) -fpermissive -O2 -DDEBUG
 LDFLAGS=$(CFLAGS)
 TEST_BUILD=build_tests
 SRC_DIR=src

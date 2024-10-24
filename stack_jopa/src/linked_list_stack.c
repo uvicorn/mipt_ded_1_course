@@ -5,6 +5,7 @@
 
 #ifdef __cplusplus
 #include <cstring>
+#include <cstdio>
 #include <cstdlib>
 #include <cassert>
 #endif
@@ -43,44 +44,71 @@ LLStack* LLStack_delete(LLStack* stack){
     return NULL;
 }
 
-void LLStack_push(LLStack* stack, stack_element element){
+LLStackErr LLStack_push(LLStack* stack, stack_element* element){
     assert(stack != NULL);
     assert(stack->current_page_data != NULL);
-    
+    /* assert(element != NULL); */
+
     if (stack->size == PAGE_CAPACITY - 1){ // ... element END
         // если мы пушим на конец странички, то канарейка не нужна, т.к. она пойдет на новую страничку
-        stack->elements[stack->size++] = element;
+        /* memcpy(&stack->elements[stack->size++], element, sizeof(stack_element)); */
+        stack->elements[stack->size++] = *element;
     }
     else if (stack->size == PAGE_CAPACITY){ // ... END
         switch_to_next_page(stack);
-        stack->elements[stack->size++] = element;
+        /* memcpy(&stack->elements[stack->size++], element, sizeof(stack_element)); */
+        stack->elements[stack->size++] = *element;
         stack->elements[stack->size++] = stack->canary;
     }
     else {
-        stack->elements[stack->size++] = element;
+        stack->elements[stack->size++] = *element;
         stack->elements[stack->size++] = stack->canary;
     }
+    fprintf(stderr, "PUSH stack_size=%d canary=%llu element=%llu\n",stack->size, stack->elements[stack->size-1], stack->elements[stack->size-2]);
+    // TODO: переписать канарейки нахуй с int64
+    return NoError;
 }
 
 
-stack_element LLStack_pop(LLStack* stack){
+LLStackErr LLStack_pop(LLStack* stack, stack_element* element){
+    assert(stack != NULL);
+    assert(stack->current_page_data != NULL);
+    assert(element != NULL);
+
+
+    fprintf(stderr, "POP_REQUEST stack_size=%d\n", stack->size);
+    if (stack->size == 0){
+        switch_to_prev_page(stack);
+        *element              = stack->elements[--stack->size];
+    } else {
+        stack_element canary  = stack->elements[--stack->size];
+        *element              = stack->elements[--stack->size];
+        if (canary != stack->canary)
+            return CanaryCorrupted;
+    }
+    fprintf(stderr, "POP stack_size=%d canary=%llu element=%llu\n", stack->size, stack->elements[stack->size+1], stack->elements[stack->size+0]);
+    return NoError;
+}
+
+LLStackErr LLStack_top(LLStack* stack, stack_element* element){
+    assert(stack != NULL);
+    assert(stack->current_page_data != NULL);
+    assert(element != NULL);
+
+    if (stack->size == 0){
+        *element              = stack->elements[stack->size];
+    } else {
+        *element              = stack->elements[stack->size - 1];
+    }
+
+    return NoError;
+}
+
+
+static void switch_to_next_page(LLStack* stack){
     assert(stack != NULL);
     assert(stack->current_page_data != NULL);
 
-    stack_element element = {};
-
-    if (stack->size == 0){
-        switch_to_prev_page(stack);
-        element              = stack->elements[stack->size--];
-    } else {
-        stack_element canary = stack->elements[stack->size--];
-        element              = stack->elements[stack->size--];
-        assert(canary.num == stack->canary.num && "Stack corruption detected"); // TODO: заменить ассерт на errno enum
-    }
-    return element;
-}
-
-static void switch_to_next_page(LLStack* stack){
     void* next_page_data = get_next_page(stack->current_page_data);
 
     if (next_page_data == NULL){
@@ -98,6 +126,9 @@ static void switch_to_next_page(LLStack* stack){
 
 // 23.09 4:29 стоит ли бросать курить? С ашкой это веселее писалось
 static void switch_to_prev_page(LLStack* stack){
+    assert(stack != NULL);
+    assert(stack->current_page_data != NULL);
+
     void* next_page_data = get_next_page(stack->current_page_data);
     void* current_page = stack->current_page_data;
     void* prev_page_data = get_prev_page(stack->current_page_data);
@@ -128,6 +159,6 @@ StackInterface* StackInterface_LLStack_ctor(){
     stack_object->Dtor = LLStack_delete;
     stack_object->Pop  = LLStack_pop;
     stack_object->Push = LLStack_push;
-    stack_object->Top  = NULL;
+    stack_object->Top  = LLStack_top;
     return stack_object;
 }

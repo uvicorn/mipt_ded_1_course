@@ -6,29 +6,47 @@
 #include <cassert>
 #endif
 
+// TODO: GENERIC HERE
+/* _Generic push(Stack* stack, type x) { */
+/* uint64_t: push_uint64_t(stack, x); */
+/*     default: push_void(stacl, x); */
+/* } */
+
 void StackObject_ctor(StackInterface* stack_object){
     assert(stack_object->Ctor != NULL && "Stack->Constructor method Not Implemented");
+
     stack_object->private_stack = stack_object->Ctor();
 }
 
 void StackObject_dtor(StackInterface* stack_object){
     assert(stack_object->Dtor != NULL && "Stack->Destructor method Not Implemented");
+
     stack_object->private_stack = stack_object->Dtor(stack_object->private_stack);
 }
 
-void StackObject_push(StackInterface* stack_object, stack_element element){
+
+StackErr StackObject_push(StackInterface* stack_object, stack_element* element){
     assert(stack_object->Push != NULL && "Stack->Push method Not Implemented");
-    stack_object->Push(stack_object->private_stack, element);
+    assert(stack_object->ErrorHandler != NULL && "Stack->ErrorHandler Not Implemented");
+
+    StackErr err = stack_object->Push(stack_object->private_stack, element);
+    return stack_object->ErrorHandler(stack_object, err);
 }
 
-stack_element StackObject_pop(StackInterface* stack_object){
+StackErr StackObject_pop(StackInterface* stack_object, stack_element* element){
     assert(stack_object->Pop != NULL && "Stack->Pop method Not Implemented");
-    return stack_object->Pop(stack_object->private_stack);
+    assert(stack_object->ErrorHandler != NULL && "Stack->ErrorHandler Not Implemented");
+
+    StackErr err = stack_object->Pop(stack_object->private_stack, element);
+    return stack_object->ErrorHandler(stack_object, err);
 }
 
-stack_element StackObject_top(StackInterface* stack_object){
+StackErr StackObject_top(StackInterface* stack_object, stack_element* element){
     assert(stack_object->Top != NULL && "Stack->Top method Not Implemented");
-    return stack_object->Top(stack_object->private_stack);
+    assert(stack_object->ErrorHandler != NULL && "Stack->ErrorHandler Not Implemented");
+
+    StackErr err = stack_object->Top(stack_object->private_stack, element);
+    return stack_object->ErrorHandler(stack_object, err);
 }
 
 

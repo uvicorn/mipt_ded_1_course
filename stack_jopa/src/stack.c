@@ -1,6 +1,7 @@
 #include "stack.h"
 #include "random.h"
 #include "stack_interface.h"
+#include <assert.h>
 
 #ifdef __cplusplus
 #include <cstring>
@@ -9,8 +10,10 @@
 #endif
 
 // Саня сказал лучше malloc и realloc на NULL проверять, иначе память проебать можно
-static inline void* safe_malloc(size_t size){
-    void* ptr = malloc(size);
+static inline void* safe_malloc(size_t nelem, size_t elsize){
+    void* ptr = malloc(nelem * elsize);
+    if (__builtin_mul_overflow_p(nelem, elsize, 0))
+        assert(!"Malloc nelem * elsize overflowed!");
     assert(ptr != NULL);
     return ptr;
 }
@@ -25,10 +28,10 @@ static inline void* safe_realloc(void* ptr, size_t new_size){
 
 Stack* stack_new(){
     // саня сказал лучше такие конструкторы делать
-    Stack* stack = (Stack *)safe_malloc(sizeof(Stack));
+    Stack* stack = (Stack *)safe_malloc(1, sizeof(Stack));
     generate_stack_canary((char *)&stack->canary);
 
-    stack->elements = (stack_element *)safe_malloc(sizeof(stack_element) * STACK_CAPACITY);
+    stack->elements = (stack_element *)safe_malloc(STACK_CAPACITY, sizeof(stack_element));
     stack->size = 0;
     stack->capacity = STACK_CAPACITY;
 
@@ -69,7 +72,7 @@ stack_element stack_pop(Stack* stack){
     stack_element canary  = stack->elements[stack->size--];
     stack_element element = stack->elements[stack->size--];
 
-    assert(canary.num == stack->canary.num && "Stack corruption detected"); // TODO: заменить ассерт на errno enum
+    assert(canary == stack->canary && "Stack corruption detected"); // TODO: заменить ассерт на errno enum
 
     // уменьшаем размер стека
     if (stack->size < (stack->capacity >> 1)){

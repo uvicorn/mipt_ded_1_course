@@ -1,13 +1,7 @@
 #include <unistd.h>
 #include <sys/mman.h>
 #include "pages.h"
-#include "linked_list_stack.h"
-
-#ifdef __cplusplus
-#include <cstring>
-#include <cstdlib>
-#include <cassert>
-#endif
+#include "assert.h"
 
 /*
  * Структура странички:
@@ -36,7 +30,7 @@ void** get_next_page_ptr(void* current_page_data){
 
 // return link to page_data
 void* create_page(){
-    void** page = mmap(NULL, PAGE_SIZE, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+    void** page = (void** )mmap(NULL, PAGE_SIZE, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
     assert(page != NULL);
 
     *page++ = NULL;

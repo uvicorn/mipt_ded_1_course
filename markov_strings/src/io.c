@@ -17,7 +17,7 @@ void read_file_to_buffer(const char* filename, int fsize, char* buffer){
 
     FILE* fptr = fopen(filename, "r"); 
     if (fptr){
-        fread(buffer, 1, fsize, fptr);
+        fread(buffer, sizeof(char), fsize, fptr);
         fclose(fptr);
     }
 }
