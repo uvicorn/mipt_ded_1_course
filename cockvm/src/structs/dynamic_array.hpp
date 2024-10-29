@@ -2,18 +2,20 @@
 #define DYNAMIC_ARRAY
 
 #include <assert.h>
-#include <cstdlib>
 #include <stddef.h>
 #include <string.h>
+#include <stdlib.h>
 
 #define ARRAY_CAPACITY 16
 
 template <typename T>
 class DynamicArray {
     public:
-        virtual ~DynamicArray(){
+        ~DynamicArray(){
+            /* for (int index = 0; index < this->size; index++){ */
+            /*     delete this->elements[index]; */
+            /* } */
             free(elements);
-            /* delete this; */
         }
 
         void append(T* element){
@@ -22,17 +24,25 @@ class DynamicArray {
             if (this->size == this->capacity){
                 this->capacity <<= 1;
                 this->elements = realloc(elements, capacity);
+                assert(this->elements != NULL && !"realloc failed");
             }
-            memcpy(&this->elements[size], element, sizeof(T));
-            this->size += sizeof(T);
+            memcpy(&this->elements[size * sizeof(T)], element, sizeof(T));
+            this->size++;
         }
 
         T get(size_t index){
-            assert(index * sizeof(T) < size);
-            return elements[index * sizeof(T)];
+            assert(index < this->size);
+            return this->elements[index * sizeof(T)];
         }
-        DynamicArray(size_t capacity){
-            this->elements = allocate_elements(capacity);
+
+        DynamicArray(size_t capacity = ARRAY_CAPACITY, T* default_elements = NULL){
+            assert(capacity != 0);
+            
+            this->capacity = capacity;
+            this->elements = malloc(capacity * sizeof(T));
+            if (default_elements != NULL){
+                memcpy(elements, default_elements, capacity * sizeof(T));
+            }
         }
 
     private:
@@ -42,16 +52,10 @@ class DynamicArray {
 
         T* allocate_elements(size_t capacity){
             assert(capacity != 0);
-            elements = malloc(capacity * sizeof(T));
-            this->capacity = capacity * sizeof(T);
-            return elements;
+
         }
 };
-template <typename T>
-class UsagePool {
-    public:
-        
-};
+
 
 #endif
 

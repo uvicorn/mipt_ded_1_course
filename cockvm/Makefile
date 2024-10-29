@@ -6,8 +6,7 @@ SRC_DIR := src
 EXE := main
 BUILD := build
 
-# CFLAGS = -lm -I $(INCLUDE_DIR)
-CFLAGS := -Wall -Wextra -Wpedantic  -I $(INCLUDE_DIR) -fpermissive -DDEBUG -lstdc++ -D_FORTIFY_SOURCE=2 -Og -ggdb
+CFLAGS := -Wall -Wextra -Wpedantic  -I $(INCLUDE_DIR) -Isrc -fpermissive -DDEBUG -lstdc++ -D_FORTIFY_SOURCE=2 -Og -ggdb
 # -fsanitize=address
 LDFLAGS := $(CFLAGS)
 
@@ -41,4 +40,4 @@ $(BUILD)/%.o: $(SRC_DIR)/%.cpp #$(SOURCES)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-	rm $(BUILD)/*
+	rm $(OBJECTS) $(BUILD)/main.o $(BUILD)/main
