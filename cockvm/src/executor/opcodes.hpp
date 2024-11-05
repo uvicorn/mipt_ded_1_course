@@ -1,7 +1,9 @@
 #ifndef OPCODES_H
 #define OPCODES_H
 
-typedef enum {
+#include <cstdint>
+
+typedef enum : uint8_t {
     OP_HALT,
     OP_UD2,
 
@@ -38,5 +40,12 @@ typedef enum {
 } OpCode;
 
 #define OPCODES_COUNT 256
+
+#pragma pack(push, 1)
+typedef struct OpcodeInfo {
+    OpCode opcode: 8;
+    uint8_t args_info: 8;
+} OpcodeInfo;
+#pragma pack(pop)
 
 #endif
