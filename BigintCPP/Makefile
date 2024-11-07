@@ -7,6 +7,7 @@ EXE := main
 BUILD := build
 
 CFLAGS := -Wall -Wextra -Wpedantic  -I $(INCLUDE_DIR) -Isrc -fpermissive -DDEBUG -lstdc++ -D_FORTIFY_SOURCE=2 -Og -ggdb
+# CFLAGS := -Isrc
 # -fsanitize=address
 LDFLAGS := $(CFLAGS)
 
