@@ -41,11 +41,5 @@ typedef enum : uint8_t {
 
 #define OPCODES_COUNT 256
 
-#pragma pack(push, 1)
-typedef struct OpcodeInfo {
-    OpCode opcode: 8;
-    uint8_t args_info: 8;
-} OpcodeInfo;
-#pragma pack(pop)
 
 #endif

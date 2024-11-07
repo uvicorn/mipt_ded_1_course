@@ -1,29 +1,21 @@
-#ifndef OPCODE_PARSER_H
-#define OPCODE_PARSER_H
+#ifndef OPCODES_INFO_HPP
+#define OPCODES_INFO_HPP
 
 #include "opcodes.hpp"
 #include <cstdint>
-#include "vm.hpp"
 
-typedef uint32_t MemoryAddress;
+#define MAX_ARGS_COUNT 4
 
-typedef enum: uint8_t {
-    VMPARSER_OK = 0,
-    VMPARSER_INVALID_OPCODE = 1 << 0,
-} VMParserError;
+typedef uint32_t MemoryAddress; // TODO: вынести в другое место, так как это подвязано к стеку вм
 
-typedef enum : uint8_t {
-    ARG_NO       = 0b0,
-    ARG_REGISTER = 0b1,
-    ARG_MEMORY   = 0b10,
-    ARG_IMM      = 0b11
-} ARG_TYPE;
+#pragma pack(push, 1)
+typedef struct OpcodeInfo {
+    OpCode opcode: 8;
+    uint8_t args_info: 8;
+} OpcodeInfo;
+#pragma pack(pop)
 
-typedef struct{
-    uint8_t num: 3;
-    uint8_t part: 2; // 8, 16, 32, 64
-} RegId;
-
+// ARGUMENT BIT DIMENSION
 typedef enum : uint8_t {
     X64 = 0b11,
     X32 = 0b10,
@@ -31,19 +23,31 @@ typedef enum : uint8_t {
     X8  = 0b00,
 } BIT_DIMENSION;
 
-typedef enum: uint8_t {
-    MAT_REG = 0b00,
-    MAT_IMM = 0b01,
-    MAT_IMM_REG = 0b10,
-    MAT_IMM_REG1_REG2 = 0b11
-} MemoryArgumentType;
+// REGISTER ARGUMENT
 
+#pragma pack(push, 1)
+typedef struct{
+    uint8_t num: 3;
+    uint8_t part: 2; // 8, 16, 32, 64
+} RegId;
+#pragma pack(pop)
+
+// IMM ARGUMENT
 #pragma pack(push, 1)
 typedef struct {
     BIT_DIMENSION dim; // 64, 32, 16, 8 // 8 4 2 1
     uint64_t value;
 } Imm;
 #pragma pack(pop)
+
+
+// MEMORY ARGUMENT
+typedef enum: uint8_t {
+    MAT_REG = 0b00,
+    MAT_IMM = 0b01,
+    MAT_IMM_REG = 0b10,
+    MAT_IMM_REG1_REG2 = 0b11
+} MemoryArgumentType;
 
 #pragma pack(push, 1)
 typedef struct {
@@ -75,6 +79,16 @@ typedef struct {
 } Mem;
 #pragma pack(pop)
 
+
+// PARSER STRUCTS
+
+typedef enum : uint8_t {
+    ARG_NO       = 0b0,
+    ARG_REGISTER = 0b1,
+    ARG_MEMORY   = 0b10,
+    ARG_IMM      = 0b11
+} ARG_TYPE;
+
 #pragma pack(push, 1)
 typedef struct {
     union {
@@ -97,9 +111,8 @@ typedef struct {
 #pragma pack(pop)
 
 typedef struct {
-    ParsedArgInfo* parsed_args;
-} Instruction;
-
-VMParserError parse_arguments(VM* Vm, ParsedArgInfo* parsed_args, size_t* parser_ip);
+    uint8_t args_count = 0;
+    ParsedArgInfo parsed_args[MAX_ARGS_COUNT];
+} ParsedArgs;
 
 #endif

@@ -3,14 +3,10 @@
 
 #include "stddef.h"
 #include <cstdint>
-#include "opcodes.hpp"
-
-
-typedef enum : uint32_t{
-    VM_OK = 0,
-    VM_INVALID_OPCODE = 1 << 0,
-    VM_INVALID_OPARGS_COUNT = 1 << 1,
-} VMError;
+#include "opcodes/opcodes.hpp"
+#include "structs/dynamic_array.hpp"
+#include "opcodes/opcodes_info.hpp"
+#include "executor/errors.hpp"
 
 /* typedef union { */
 /*     uint64_t R64; */
@@ -29,7 +25,10 @@ typedef struct {
     size_t bytecode_size;
     RegType regs[8];
     size_t ip = 0;
+    DynamicArray<MemoryAddress> address_stack;
+    DynamicArray<MemoryAddress> stack;
 } VM;
+
 
 typedef VMError(*VMHandler)(VM *, OpcodeInfo);
 

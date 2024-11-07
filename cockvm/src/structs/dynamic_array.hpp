@@ -1,6 +1,7 @@
-#ifndef DYNAMIC_ARRAY
-#define DYNAMIC_ARRAY
+#ifndef DYNAMIC_ARRAY_HPP
+#define DYNAMIC_ARRAY_HPP
 
+#include <algorithm>
 #include <assert.h>
 #include <stddef.h>
 #include <string.h>
@@ -11,65 +12,46 @@
 template <typename T>
 class DynamicArray {
     public:
+
+        DynamicArray(size_t capacity = ARRAY_CAPACITY, const T& default_elements = T()){
+            /* assert(capacity != 0); */
+            this->size     = capacity;
+            this->capacity = capacity;
+
+            this->elements = new T[capacity];
+            std::fill(this->elements, this->elements + capacity, default_elements);
+
+            assert(this->elements);
+        }
+
         ~DynamicArray(){
-            /* for (int index = 0; index < this->size; index++){ */
-            /*     delete this->elements[index]; */
-            /* } */
-            free(elements);
-        }
-        void push_back(const T& element){
-            if (this->size == this->capacity) {
-                this->capacity <<= 1;
-                for (size_t index = 0 )
-            }
-            m_capacity = m_size;
-            Elem* new_data = new Elem[m_capacity];
-              assert(new_data);
-
-              // Перемещаем элементы если можем,
-              // если они не желают перемещаться без возможного кидания ошибок
-              // копируем их.
-              for (size_t index = 0; i < m_size; ++i)
-                new_data[i] = std::move_if_noexcept(m_data[i]);
-
-              delete [] m_data;
-              m_data = new_data;
-            }
-
-            // Тут происходит копирование.
-            // Если бы мы memcpy-или какой-нибудь сложный тип
-            // (вроде std::string) можно было
-            // бы получить две строки с общим буффером,
-            // но раздельными размерами, что не есть хорошо.
-            m_data[m_size] = elem;
-
-            m_size++;
-        }
-        void append(T* element){
-            assert(element != NULL);
-
-            if (this->size == this->capacity){
-                this->capacity <<= 1;
-                this->elements = realloc(elements, capacity);
-                assert(this->elements != NULL && !"realloc failed");
-            }
-            memcpy(&this->elements[size], element, sizeof(T));
-            this->size++;
+            delete[] this->elements;
         }
 
-        T get(size_t index){
+        T& get(size_t index){
             assert(index < this->size);
             return this->elements[index];
         }
 
-        DynamicArray(size_t capacity = ARRAY_CAPACITY, T* default_elements = NULL){
-            assert(capacity != 0);
-            
-            this->capacity = capacity;
-            this->elements = malloc(capacity * sizeof(T));
-            if (default_elements != NULL){
-                memcpy(elements, default_elements, capacity * sizeof(T));
+        void push_back(const T& element){
+            if (this->size == this->capacity) {
+                this->capacity <<= 1;
+
+                T* new_elements = new T[this->capacity];
+                assert(new_elements);
+
+                for (size_t index = 0; index < this->size; index++)
+                    new_elements[index] = std::move_if_noexcept(this->elements[index]);
+
+                delete[] this->elements;
+                this->elements = new_elements;
             }
+            // ПРОИСХОДИТ КОПИРОВАНИЕ
+            this->elements[this->size++] = element;
+        }
+        T& pop_back(){
+            assert(0 < this->size);
+            return this->elements[this->size--];
         }
 
     private:

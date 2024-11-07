@@ -2,8 +2,6 @@
 #include <cassert>
 #include <cstddef>
 #include <cstdint>
-#include "opcodes.hpp"
-#include "opcode_parser.hpp"
 #include "utils/log.hpp"
 #include "utils/compiler_opts.hpp"
 
