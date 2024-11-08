@@ -21,6 +21,7 @@ class BigInt{
         /* BigInt(std::unique_ptr<UInt[]>, size_t); */
         BigInt(Blocks blocks, size_t blocks_count, SIGN sign);
         ~BigInt() = default;
+        BigInt& operator=(BigInt&) = default;
 
         friend BigInt operator+(BigInt const& a, BigInt const& b);
         friend BigInt operator-(BigInt const& a, BigInt const& b);
@@ -32,9 +33,14 @@ class BigInt{
         friend bool operator<=(BigInt const& a, BigInt const& b);
         friend bool operator>=(BigInt const& a, BigInt const& b);
 
+        friend bool operator^(BigInt const& a, uint64_t b); // power
+
         static bool AbsCmp(BigInt const& a, BigInt const& b);
         static bool AbsLe(BigInt const& a, BigInt const& b);
         static bool AbsGe(BigInt const& a, BigInt const& b);
+
+        void SwapSign();
+        void SetSign(SIGN sign);
     private:
         size_t blocks_count;
         Blocks blocks;//(new UInt[new_blocks_count]);
@@ -43,8 +49,6 @@ class BigInt{
         void Normalize();
         static BigInt AbsAdd(BigInt const& a, BigInt const& b);
         static BigInt AbsSub(const BigInt& a, const BigInt& b);
-        static BigInt AbsSub_SameSize(const BigInt& a, const BigInt& b);
-        static BigInt AbsSub_DifferentSize(const BigInt& a, const BigInt& b);
 
 };
 
