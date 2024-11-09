@@ -2,6 +2,8 @@
 #include <cassert>
 #include <cstdint>
 #include <functional>
+#include <tuple>
+
 
 // необходимо передавать в b больший аргумент
 BigInt BigInt::AbsAdd(const BigInt& a, const BigInt& b){
@@ -75,45 +77,50 @@ BigInt BigInt::AbsSub(const BigInt& a, const BigInt& b){
 }
 
 // ADDITION
+BigInt operator+(const BigInt& a, const BigInt& b){
+    /* a, b > 0
+     * 1) a+b       = a + b
+     * 2) (-a)+(-b) = -(a + b)
+     * 3) (-a)+b    = b - a
+     * 4) a+(-b)    = a - b
+     */
+    const auto [smaller, larger] = a.blocks_count <= b.blocks_count ?
+        std::tie(a, b) : std::tie(b, a);
 
-BigInt operator+(const BigInt& _a, const BigInt& _b){
-    const BigInt& a = _a.blocks_count <= _b.blocks_count ? _a : _b;
-    const BigInt& b = _a.blocks_count <= _b.blocks_count ? _b : _a;
-    if (a.sign == b.sign){
+    if (smaller.sign == larger.sign){
         return BigInt::AbsAdd(a, b);
     }
 
-    if (a.blocks_count == b.blocks_count){
-        if (a > b){
-            auto result = std::ref(BigInt::AbsSub(b, a));
+    if (smaller.blocks_count == larger.blocks_count){
+        if (smaller > larger){ // LOL
+            auto result = BigInt::AbsSub(larger, smaller);
             /* result.sign = a.sign; */
             return result;
         } else {
-            BigInt result = BigInt::AbsSub(a, b);
-            result.sign = a.sign;
+            BigInt result = BigInt::AbsSub(smaller, larger);
+            result.sign = smaller.sign;
             return result;
         }
     }
     // blocks not same size
-    return BigInt::AbsSub(_a, _b);
+    return BigInt::AbsSub(smaller, larger);
 }
 
 // SUBSTRACTION
 BigInt operator-(const BigInt& _a, const BigInt& _b){
-    if (_a.sign != _b.sign){
+    /* a, b > 0
+     * 1) a-b       = a - b
+     * 2) (-a)-(-b) = b - a
+     * 3) (-a)-b    = -(a + b)
+     * 4) a-(-b)    = a + b
+     */
+    if (_a.sign != _b.sign){ // 3, 4
         BigInt result = BigInt::AbsAdd(_a, _b);
-        result.SetSign(_a.sign);
+        result.sign = _a.sign;
         return result;
     }
 
-}
-
-void BigInt::SwapSign(){
-    this->sign = this->sign == PLUS ? MINUS : PLUS; // TODO: переписать на sign = sign ^ 1
-}
-
-void BigInt::SetSign(SIGN sign){
-    this->sign = sign;
+    
 }
 
 
@@ -121,12 +128,14 @@ void BigInt::SetSign(SIGN sign){
 
 // POWER
 
-/* BigInt operator^(const BigInt& a, uint64_t power){ */
-/*     BigInt result = a; */
-/*     BigInt result; */
-/*     while (power){ */
-/*         if (power & 1) */
-/*             result *= 2; */
-/*         power >>= 1; */
-/*     } */
-/* } */
+BigInt operator^(const BigInt& a, UInt power){
+    BigInt result = a;
+    BigInt mul = a;
+    while (power){
+        if (power & 1){
+            result += mul;
+        }
+        mul *= UInt(2);
+        power >>= 1;
+    }
+}

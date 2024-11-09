@@ -20,12 +20,23 @@ class BigInt{
     public:
         /* BigInt(std::unique_ptr<UInt[]>, size_t); */
         BigInt(Blocks blocks, size_t blocks_count, SIGN sign);
+        BigInt(const BigInt&);
         ~BigInt() = default;
-        BigInt& operator=(BigInt&) = default;
+        /* BigInt& operator=(const BigInt& other); */
+        /* BigInt& operator=(BigInt other); */
+        friend void swap(BigInt& first, BigInt& second);
+
+        BigInt& operator=(const BigInt&) = delete;
+        BigInt& operator=(BigInt&&) = default;
+        /* BigInt(const BigInt&) = delete; */
+        BigInt(BigInt&&) = default;
 
         friend BigInt operator+(BigInt const& a, BigInt const& b);
         friend BigInt operator-(BigInt const& a, BigInt const& b);
+        
         friend BigInt operator*(BigInt const& a, BigInt const& b);
+        friend BigInt operator^(BigInt const& a, uint64_t b); // power
+        friend BigInt operator/(BigInt const& a, BigInt const& b);
 
         friend bool operator<(BigInt const& a, BigInt const& b);
         friend bool operator>(BigInt const& a, BigInt const& b);
@@ -33,7 +44,6 @@ class BigInt{
         friend bool operator<=(BigInt const& a, BigInt const& b);
         friend bool operator>=(BigInt const& a, BigInt const& b);
 
-        friend bool operator^(BigInt const& a, uint64_t b); // power
 
         static bool AbsCmp(BigInt const& a, BigInt const& b);
         static bool AbsLe(BigInt const& a, BigInt const& b);
