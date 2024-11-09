@@ -18,26 +18,28 @@ class BigInt{
     using Blocks = std::unique_ptr<UInt[]>;
 
     public:
-        /* BigInt(std::unique_ptr<UInt[]>, size_t); */
+        // ctor's 
         BigInt(Blocks blocks, size_t blocks_count, SIGN sign);
+        BigInt(BlocksType blocks, size_t blocks_count, SIGN sign);
         BigInt(const BigInt&);
-        ~BigInt() = default;
-        /* BigInt& operator=(const BigInt& other); */
-        /* BigInt& operator=(BigInt other); */
-        friend void swap(BigInt& first, BigInt& second);
 
+        ~BigInt() = default;
         BigInt& operator=(const BigInt&) = delete;
         BigInt& operator=(BigInt&&) = default;
-        /* BigInt(const BigInt&) = delete; */
         BigInt(BigInt&&) = default;
 
+        friend void swap(BigInt& first, BigInt& second);
+
+        // add sub operators
         friend BigInt operator+(BigInt const& a, BigInt const& b);
         friend BigInt operator-(BigInt const& a, BigInt const& b);
-        
+
+        // muldiv operators
         friend BigInt operator*(BigInt const& a, BigInt const& b);
-        friend BigInt operator^(BigInt const& a, uint64_t b); // power
+        friend BigInt operator^(const BigInt& a, UInt power);
         friend BigInt operator/(BigInt const& a, BigInt const& b);
 
+        // comparison operators
         friend bool operator<(BigInt const& a, BigInt const& b);
         friend bool operator>(BigInt const& a, BigInt const& b);
         friend bool operator==(BigInt const& a, BigInt const& b);
@@ -45,12 +47,16 @@ class BigInt{
         friend bool operator>=(BigInt const& a, BigInt const& b);
 
 
+        // ABS arithmetic and comparison functions
         static bool AbsCmp(BigInt const& a, BigInt const& b);
         static bool AbsLe(BigInt const& a, BigInt const& b);
         static bool AbsGe(BigInt const& a, BigInt const& b);
 
+        // sign functions
         void SwapSign();
         void SetSign(SIGN sign);
+        BigInt operator-(); // unary minus
+
     private:
         size_t blocks_count;
         Blocks blocks;//(new UInt[new_blocks_count]);

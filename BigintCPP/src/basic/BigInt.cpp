@@ -13,6 +13,7 @@ BigInt::BigInt(Blocks blocks, size_t blocks_count, SIGN sign):
     this->Normalize();
 }
 
+// убирает лишние нули в конце BigInt, изменяя только blocks_count
 void BigInt::Normalize(){
     // IDEA: можно сделать оптимизацию, вставив в конец 0 или в начало 0
     while (blocks_count > 0 && !blocks[blocks_count-1]){
@@ -30,7 +31,21 @@ BigInt::BigInt(const BigInt& other) :
     for (size_t index = 0; index < blocks_count; index++)
         this->blocks[index] = other.blocks[index];
     // TODO: переписать копирование содержимого unique_ptr. Возможно через clone_ptr ???
+
+    this->Normalize();
 }
+
+BigInt::BigInt(BlocksType blocks, size_t blocks_count, SIGN sign) :
+    blocks_count(blocks_count),
+    sign(sign)
+{
+    this->blocks = std::make_unique<BlocksType>(blocks_count);
+    for (size_t index = 0; index < blocks_count; index++)
+        this->blocks[index] = blocks[index];
+
+    this->Normalize();
+}
+
 
 void BigInt::SwapSign(){
     this->sign = this->sign == PLUS ? MINUS : PLUS; // TODO: переписать на sign = sign ^ 1

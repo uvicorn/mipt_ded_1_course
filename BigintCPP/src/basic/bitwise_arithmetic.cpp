@@ -1,4 +1,2 @@
 #include "BigInt.hpp"
 
-
-operator^()

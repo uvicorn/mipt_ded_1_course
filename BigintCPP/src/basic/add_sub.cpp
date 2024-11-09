@@ -7,20 +7,23 @@
 
 // необходимо передавать в b больший аргумент
 BigInt BigInt::AbsAdd(const BigInt& a, const BigInt& b){
-    assert(a.blocks_count <= b.blocks_count && !"args not normalized");
-    assert(a.sign == b.sign && !"Not same sign at Add");
+    /* assert(a.blocks_count <= b.blocks_count && !"args not normalized"); */
+    /* assert(a.sign == b.sign && !"Not same sign at Add"); */
 
-    size_t min_blocks_count = a.blocks_count;
-    size_t max_blocks_count = b.blocks_count;
+    const auto [smaller, larger] = a.blocks_count < b.blocks_count ?
+        std::tie(a, b) : std::tie(b, a);
 
-    size_t new_blocks_count = b.blocks_count + 1;
+    size_t min_blocks_count = smaller.blocks_count;
+    size_t max_blocks_count = larger.blocks_count;
+
+    size_t new_blocks_count = larger.blocks_count + 1;
     BigInt::Blocks new_blocks(new UInt[new_blocks_count]);
     /* auto new_blocks = std::make_unique<BigInt::BlocksType>(new_blocks_count); */
 
     UInt carry = 0;
     for (size_t index = 0; index < min_blocks_count; index++){
-        UInt a_block = a.blocks[index];
-        UInt b_block = b.blocks[index];
+        UInt a_block = smaller.blocks[index];
+        UInt b_block = larger.blocks[index];
         UInt sum = 0;
 
         carry = __builtin_add_overflow(carry, a_block, &sum);
@@ -29,7 +32,7 @@ BigInt BigInt::AbsAdd(const BigInt& a, const BigInt& b){
     }
 
     for (size_t index = min_blocks_count; index < max_blocks_count; index++){
-        UInt b_block = b.blocks[index];
+        UInt b_block = larger.blocks[index];
         UInt sum = 0;
 
         carry = __builtin_add_overflow(carry, b_block, &sum);
@@ -37,26 +40,27 @@ BigInt BigInt::AbsAdd(const BigInt& a, const BigInt& b){
     }
 
     new_blocks[max_blocks_count] = carry;
-    return BigInt(std::move(new_blocks), new_blocks_count, a.sign);
+    return BigInt(std::move(new_blocks), new_blocks_count, PLUS);
 }
 
-// необходимо передавать в b больший аргумент
 BigInt BigInt::AbsSub(const BigInt& a, const BigInt& b){
-    assert(a.blocks_count < b.blocks_count && !"args not different size");
+    /* assert(a.blocks_count < b.blocks_count && !"args not different size"); */
     /* assert(a.sign != b.sign && !"Same sign at Sub"); */
-    assert(b > a && !"CHO BLYA b>a need");
+    /* assert(b > a && !"CHO BLYA b>a need"); */
 
+    const auto [smaller, larger] = BigInt::AbsLe(a, b) ?
+        std::tie(a, b) : std::tie(b, a);
 
-    size_t min_blocks_count = a.blocks_count;
-    size_t max_blocks_count = b.blocks_count;
+    size_t min_blocks_count = smaller.blocks_count;
+    size_t max_blocks_count = larger.blocks_count;
 
     size_t new_blocks_count = max_blocks_count;
     BigInt::Blocks new_blocks(new UInt[new_blocks_count]);
 
     UInt carry = 0;
     for (size_t index = 0; index < min_blocks_count; index++){
-        UInt a_block = a.blocks[index];
-        UInt b_block = b.blocks[index];
+        UInt a_block = smaller.blocks[index];
+        UInt b_block = larger.blocks[index];
         UInt sum = 0;
 
         carry = __builtin_sub_overflow(b_block, carry, &sum);
@@ -66,14 +70,14 @@ BigInt BigInt::AbsSub(const BigInt& a, const BigInt& b){
     }
 
     for (size_t index = min_blocks_count; index < max_blocks_count; index++){
-        UInt b_block = b.blocks[index];
+        UInt b_block = larger.blocks[index];
         UInt sum = 0;
 
         carry = __builtin_sub_overflow(b_block, carry, &sum);
         new_blocks[index] = sum;
     }
 
-    return BigInt(std::move(new_blocks), new_blocks_count, b.sign);
+    return BigInt(std::move(new_blocks), new_blocks_count, PLUS);
 }
 
 // ADDITION
@@ -87,8 +91,10 @@ BigInt operator+(const BigInt& a, const BigInt& b){
     const auto [smaller, larger] = a.blocks_count <= b.blocks_count ?
         std::tie(a, b) : std::tie(b, a);
 
-    if (smaller.sign == larger.sign){
-        return BigInt::AbsAdd(a, b);
+    if (a.sign == b.sign){ // 1,2
+        auto result = BigInt::AbsAdd(a, b);
+        result.sign = a.sign;
+        return result;
     }
 
     if (smaller.blocks_count == larger.blocks_count){
@@ -107,35 +113,55 @@ BigInt operator+(const BigInt& a, const BigInt& b){
 }
 
 // SUBSTRACTION
-BigInt operator-(const BigInt& _a, const BigInt& _b){
+
+constexpr uint8_t switch_pair(SIGN sign1, SIGN sign2){
+    return (sign1 << 4) | sign2;
+}
+
+BigInt operator-(const BigInt& a, const BigInt& b){
     /* a, b > 0
      * 1) a-b       = a - b
      * 2) (-a)-(-b) = b - a
      * 3) (-a)-b    = -(a + b)
      * 4) a-(-b)    = a + b
      */
-    if (_a.sign != _b.sign){ // 3, 4
-        BigInt result = BigInt::AbsAdd(_a, _b);
-        result.sign = _a.sign;
-        return result;
-    }
+    auto signs = switch_pair(a.sign, b.sign);
 
-    
+    switch (signs){
+        case switch_pair(PLUS, PLUS): // 1
+            {
+            auto result = BigInt::AbsSub(a, b);
+            return result;
+            }
+            break;
+        case switch_pair(PLUS, MINUS): // 4
+            {
+            auto result = BigInt::AbsAdd(a, b);
+            return result;
+            }
+            break;
+        case switch_pair(MINUS, PLUS): // 3
+            {
+            auto result = BigInt::AbsAdd(a, b);
+            result.sign = MINUS;
+            return result;
+            }
+        case switch_pair(MINUS, MINUS): // 2
+            {
+            auto result = BigInt::AbsAdd(a, b);
+            return result;
+            }
+    }
+    assert(0 && !"NO RETURN VALUE");
 }
 
+// Unary minus
 
-// MULTIPLICATION
+// (a) -> (-a)
 
-// POWER
-
-BigInt operator^(const BigInt& a, UInt power){
-    BigInt result = a;
-    BigInt mul = a;
-    while (power){
-        if (power & 1){
-            result += mul;
-        }
-        mul *= UInt(2);
-        power >>= 1;
-    }
+BigInt BigInt::operator-(){
+    BigInt copy = *this;
+    copy.SwapSign();
+    return copy;
 }
+
