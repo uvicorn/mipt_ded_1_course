@@ -26,10 +26,7 @@ BigInt::BigInt(const BigInt& other) :
     sign(other.sign)
 {
     this->blocks = std::make_unique<BlocksType>(blocks_count);
-    /* std::copy_n(other.blocks, blocks_count, this->blocks); */
-    /* std::copy(other.blocks, &other.blocks[blocks_count], this->blocks); */
-    for (size_t index = 0; index < blocks_count; index++)
-        this->blocks[index] = other.blocks[index];
+    std::copy_n(other.blocks.get(), other.blocks_count, this->blocks.get());
     // TODO: переписать копирование содержимого unique_ptr. Возможно через clone_ptr ???
 
     this->Normalize();
@@ -40,12 +37,20 @@ BigInt::BigInt(BlocksType blocks, size_t blocks_count, SIGN sign) :
     sign(sign)
 {
     this->blocks = std::make_unique<BlocksType>(blocks_count);
-    for (size_t index = 0; index < blocks_count; index++)
-        this->blocks[index] = blocks[index];
+    std::copy_n(blocks, blocks_count, this->blocks.get());
 
     this->Normalize();
 }
 
+BigInt::BigInt(std::initializer_list<UInt> blocks, SIGN sign):
+    sign(sign),
+    blocks_count(blocks.size()) // TODO: оно точно будет работать перед вызовом инита???
+{
+    this->blocks = std::make_unique<BlocksType>(this->blocks_count);
+    std::copy(blocks.begin(), blocks.end(), this->blocks.get());
+
+    this->Normalize();
+}
 
 void BigInt::SwapSign(){
     this->sign = this->sign == PLUS ? MINUS : PLUS; // TODO: переписать на sign = sign ^ 1

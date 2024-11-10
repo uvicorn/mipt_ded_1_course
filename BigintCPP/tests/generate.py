@@ -37,24 +37,52 @@ class BigInt:
 
 As = []
 Bs = []
-Results = []
 
 # same size
-for i in range(5):
+for i in range(10):
     a = random.randint(2, 2**200)
     b = random.randint(2, 2**200)
-    c = a + b
+
     As.append(BigInt.from_value(a))
     Bs.append(BigInt.from_value(b))
-    Results.append(BigInt.from_value(c))
+
 
 # different size
-for i in range(5):
-    a = random.randint(2, 2**100)
-    b = random.randint(2, 2**300)
-    c = a + b
+diff_sizes = [32, 64, 128, 200, 300]
+for i in range(10):
+    a_size = random.choice(diff_sizes)
+    b_size = random.choice(diff_sizes)
+
+    a = random.randint(2, 2**a_size)
+    b = random.randint(2, 2**b_size)
+
     As.append(BigInt.from_value(a))
     Bs.append(BigInt.from_value(b))
-    Results.append(BigInt.from_value(c))
+
+# corner case
+As.append(BigInt.from_value(2**128-1))
+Bs.append(BigInt.from_value(2**128-1))
+
+As.append(BigInt.from_value(2**256-1))
+Bs.append(BigInt.from_value(2**128-2))
+
+As.append(BigInt.from_value(0))
+Bs.append(BigInt.from_value(2**130))
+
+As.append(BigInt.from_value(1))
+Bs.append(BigInt.from_value(2**1000))
+
+
+# construct tests
+Results_Add = []
+Results_Sub = []
+Results_Mul = []
+for i in range(len(As)):
+    a = As[i]
+    b = Bs[i]
+    Results_Add.append(BigInt.from_value(a.value + b.value))
+    Results_Sub.append(BigInt.from_value(a.value - b.value))
+    # mul_sign = -1 ** ((a.sign ^ b.sign) & 1)
+    Results_Mul.append(BigInt.from_value(a.value * b.value))
 
 

@@ -47,4 +47,5 @@ $(BUILD)/%.o: $(TEST_DIR)/%.cpp
 
 
 clean:
-	rm $(OBJECTS) $(BUILD)/main.o $(BUILD)/main
+	find $(BUILD)/ -name "*.o" -type f -delete
+	# @ rm $(OBJECTS) $(BUILD)/main.o $(BUILD)/main

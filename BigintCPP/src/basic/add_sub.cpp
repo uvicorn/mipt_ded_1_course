@@ -148,11 +148,11 @@ BigInt operator-(const BigInt& a, const BigInt& b){
             }
         case switch_pair(MINUS, MINUS): // 2
             {
-            auto result = BigInt::AbsAdd(a, b);
+            auto result = BigInt::AbsSub(b, a);
             return result;
             }
     }
-    assert(0 && !"NO RETURN VALUE");
+    __builtin_unreachable();
 }
 
 // Unary minus
@@ -165,3 +165,14 @@ BigInt BigInt::operator-(){
     return copy;
 }
 
+// += and -=
+
+BigInt& operator+=(BigInt& bigint, const BigInt& other){
+    bigint = bigint + other;
+    return bigint;
+}
+
+BigInt& operator+=(BigInt& bigint, const UInt other){
+    bigint = bigint + other;
+    return bigint;
+}
