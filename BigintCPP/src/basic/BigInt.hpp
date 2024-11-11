@@ -40,13 +40,13 @@ class BigInt{
         friend void swap(BigInt& first, BigInt& second);
 
         // add operators
-        friend BigInt operator+(const BigInt& a, const BigInt& b);
+        virtual BigInt operator+(const BigInt& b);
         friend BigInt operator+(const BigInt& a, const UInt b);
         friend BigInt& operator+=(BigInt& bigint, const BigInt& other);
         friend BigInt& operator+=(BigInt& bigint, const UInt other);
 
         // sub operator
-        friend BigInt operator-(const BigInt& a, const BigInt& b);
+        virtual BigInt operator-(BigInt& b);
         friend BigInt operator-(const BigInt& a, const UInt b);
         friend BigInt& operator-=(BigInt& bigint, const BigInt& other);
         friend BigInt& operator-=(BigInt& bigint, const UInt other);

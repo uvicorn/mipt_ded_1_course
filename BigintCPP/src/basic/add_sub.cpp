@@ -81,13 +81,14 @@ BigInt BigInt::AbsSub(const BigInt& a, const BigInt& b){
 }
 
 // ADDITION
-BigInt operator+(const BigInt& a, const BigInt& b){
+BigInt BigInt::operator+(const BigInt& b){
     /* a, b > 0
      * 1) a+b       = a + b
      * 2) (-a)+(-b) = -(a + b)
      * 3) (-a)+b    = b - a
      * 4) a+(-b)    = a - b
      */
+    const BigInt& a = *this;
     const auto [smaller, larger] = a.blocks_count <= b.blocks_count ?
         std::tie(a, b) : std::tie(b, a);
 

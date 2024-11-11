@@ -16,13 +16,9 @@ class BigIntTester : public BigInt {
 
 };
 
-BigIntTester::BigIntTester(std::initializer_list<UInt> blocks, SIGN sign){
-    this->blocks_count = blocks.size();
-    this->sign = sign;
-    this->blocks = std::make_unique<BlocksType>(this->blocks_count);
-    std::copy(blocks.begin(), blocks.end(), this->blocks.get());
-
-    this->Normalize();
+BigIntTester::BigIntTester(std::initializer_list<UInt> blocks, SIGN sign):
+    BigInt(blocks, sign)
+{
 }
 
 std::ostream& operator<<(std::ostream& os, const BigIntTester& num) {
