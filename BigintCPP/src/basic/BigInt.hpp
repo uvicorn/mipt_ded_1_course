@@ -23,9 +23,9 @@ class BigInt{
         using BlocksType = UInt[];
         using Blocks = std::unique_ptr<BlocksType>;
         // ctor's 
+        BigInt(std::initializer_list<UInt> blocks, SIGN sign); // BigInt bigInt({1, 2, 3, 4, 5}, PLUS);
         BigInt(Blocks blocks, size_t blocks_count, SIGN sign);
         BigInt(BlocksType blocks, size_t blocks_count, SIGN sign);
-        BigInt(std::initializer_list<UInt> blocks, SIGN sign); // BigInt bigInt({1, 2, 3, 4, 5}, PLUS);
         BigInt(const BigInt&);
 
         ~BigInt() = default;

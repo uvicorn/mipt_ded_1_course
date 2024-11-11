@@ -3,16 +3,27 @@
 #include "basic/BigInt.hpp"
 #include <ostream>
 
-namespace BigIntBasic{
+namespace BigIntBasicTests{
 
 
 class BigIntTester : public BigInt {
     public:
+        /* BigIntTester(BigIntTester&&) = default; */
         size_t blocks_count;
         BigInt::Blocks blocks;//(new UInt[new_blocks_count]);
         void Normalize();
+        BigIntTester(std::initializer_list<UInt> blocks, SIGN sign);
 
 };
+
+BigIntTester::BigIntTester(std::initializer_list<UInt> blocks, SIGN sign){
+    this->blocks_count = blocks.size();
+    this->sign = sign;
+    this->blocks = std::make_unique<BlocksType>(this->blocks_count);
+    std::copy(blocks.begin(), blocks.end(), this->blocks.get());
+
+    this->Normalize();
+}
 
 std::ostream& operator<<(std::ostream& os, const BigIntTester& num) {
     os << "BigInt{blocks= [";
@@ -37,8 +48,8 @@ class BasicBigIntFixture: public testing::Test {
 
 TEST_F(BasicBigIntFixture, TestAdd){
     for (size_t index = 0; index < tests_size; index++){
-        BigIntTester first = First_args[index];
-        BigIntTester second = Second_args[index];
+        BigIntTester& first = First_args[index];
+        BigIntTester& second = Second_args[index];
         BigIntTester res = first + second;
         EXPECT_TRUE(res == Add_res[index]) << "expected result: " << Add_res[index] << "Actual result: " << res;
     }
@@ -46,8 +57,8 @@ TEST_F(BasicBigIntFixture, TestAdd){
 
 TEST_F(BasicBigIntFixture, TestSub){
     for (size_t index = 0; index < tests_size; index++){
-        BigIntTester first = First_args[index];
-        BigIntTester second = Second_args[index];
+        BigIntTester& first = First_args[index];
+        BigIntTester& second = Second_args[index];
         BigIntTester res = first - second;
         EXPECT_TRUE(res == Sub_res[index]) << "failed on " << index;
     }
