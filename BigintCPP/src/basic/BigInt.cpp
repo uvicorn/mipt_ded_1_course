@@ -4,6 +4,7 @@
 #include <memory>
 #include <type_traits>
 #include <algorithm>
+#include <cassert>
 
 BigInt::BigInt(Blocks blocks, size_t blocks_count, SIGN sign):
     blocks(std::move(blocks)),
@@ -52,6 +53,7 @@ BigInt::BigInt(std::initializer_list<UInt> blocks, SIGN sign):
     this->Normalize();
 }
 
+// sign operations
 void BigInt::SwapSign(){
     this->sign = this->sign == PLUS ? MINUS : PLUS; // TODO: переписать на sign = sign ^ 1
 }

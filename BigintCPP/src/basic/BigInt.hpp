@@ -4,6 +4,8 @@
 #include "stdint.h"
 #include "stddef.h"
 #include <memory>
+#include "utils/compiler_opts.hpp"
+
 
 using UInt = uint64_t;
 using Int = int64_t;
@@ -81,7 +83,7 @@ class BigInt{
         void SetSign(SIGN sign);
         BigInt operator-(); // unary minus
 
-    private:
+    protected:
         size_t blocks_count;
         Blocks blocks;//(new UInt[new_blocks_count]);
         void Normalize();

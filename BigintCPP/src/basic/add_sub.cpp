@@ -172,7 +172,8 @@ BigInt& operator+=(BigInt& bigint, const BigInt& other){
     return bigint;
 }
 
-BigInt& operator+=(BigInt& bigint, const UInt other){
-    bigint = bigint + other;
-    return bigint;
-}
+// TODO
+/* BigInt& operator+=(BigInt& bigint, const UInt other){ */
+/*     bigint = bigint + other; */
+/*     return bigint; */
+/* } */
