@@ -78,6 +78,12 @@ Bs.append(BigInt.from_value(2**130))
 As.append(BigInt.from_value(1))
 Bs.append(BigInt.from_value(2**1000))
 
+As.append(BigInt.from_value(123231231))
+Bs.append(BigInt.from_value(123231231+1))
+
+As.append(BigInt.from_value(123231231+2))
+Bs.append(BigInt.from_value(123231231))
+##
 
 # construct tests
 Results_Add = []
@@ -91,9 +97,15 @@ for i in range(len(As)):
     # mul_sign = -1 ** ((a.sign ^ b.sign) & 1)
     Results_Mul.append(BigInt.from_value(a.value * b.value))
 
+for i in range(len(Results_Sub)):
+    print(f"Eblo {i}:")
+    print(str(As[i]))
+    print(str(Bs[i]))
+    print(str(Results_Sub[i])+'\n')
+
 def format_array(name, size, content):
-    str_content = '{'+', '.join(str(i) for i in content) + '}'
-    return f"{bigint_classname} {name}[{size}] = {str_content};"
+    str_content = '{\n'+',\n'.join(str(i) for i in content) + '\n}'
+    return f"{bigint_classname} {name}[{size}] = {str_content};\n"
 
 arr_size = len(As)
 assert len(As) == len(Bs) == len(Results_Add) == len(Results_Mul) == len(Results_Sub)
@@ -105,6 +117,6 @@ fixture_members = [
     ("Add_res", arr_size, Results_Add),
     ("Sub_res", arr_size, Results_Sub),
 ]
-code_gen_output = '\n'.join(format_array(*i) for i in fixture_members)+f'\nsize_t tests_size = {arr_size};\n'
+code_gen_output = '\n'.join(format_array(*i) for i in fixture_members)+f'\n\nsize_t tests_size = {arr_size};\n'
 
 open(CODE_GEN_DIR+'basic_fixture.cpp', 'w+').write(CODEGEN_WARNING+code_gen_output+CODEGEN_WARNING)

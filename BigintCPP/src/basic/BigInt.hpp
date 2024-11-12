@@ -46,7 +46,7 @@ class BigInt{
         friend BigInt& operator+=(BigInt& bigint, const UInt other);
 
         // sub operator
-        virtual BigInt operator-(BigInt& b);
+        virtual BigInt operator-(const BigInt& b);
         friend BigInt operator-(const BigInt& a, const UInt b);
         friend BigInt& operator-=(BigInt& bigint, const BigInt& other);
         friend BigInt& operator-=(BigInt& bigint, const UInt other);
@@ -72,8 +72,8 @@ class BigInt{
 
         // ABS arithmetic and comparison functions
         static bool AbsCmp(const BigInt& a, const BigInt& b);
-        static bool AbsLe(const BigInt& a, const BigInt& b);
-        static bool AbsGe(const BigInt& a, const BigInt& b);
+        static bool AbsLt(const BigInt& a, const BigInt& b);
+        static bool AbsGt(const BigInt& a, const BigInt& b);
 
         static BigInt AbsAdd(const BigInt& a, const BigInt& b);
         static BigInt AbsSub(const BigInt& a, const BigInt& b);

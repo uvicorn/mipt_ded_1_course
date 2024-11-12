@@ -3,7 +3,7 @@
 
 bool operator<(const BigInt& a, const BigInt& b){
     if (a.sign == b.sign)
-        return BigInt::AbsLe(a, b);
+        return BigInt::AbsLt(a, b);
     return a.sign < b.sign;
 }
 

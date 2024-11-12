@@ -8,7 +8,7 @@ BUILD := build
 
 
 CFLAGS := -Wall -Wextra -Wpedantic  -I $(INCLUDE_DIR) -Isrc -fpermissive -DDEBUG -lstdc++ -D_FORTIFY_SOURCE=2 -Og -ggdb
-DEBUG_FLAGS := -Wall -Wextra -Wpedantic  -I $(INCLUDE_DIR) -Isrc -fpermissive -DDEBUG -lstdc++ -D_FORTIFY_SOURCE=2 -Og -ggdb -fsanitize=address
+# DEBUG_FLAGS := -Wall -Wextra -Wpedantic  -I $(INCLUDE_DIR) -Isrc -fpermissive -DDEBUG -lstdc++ -D_FORTIFY_SOURCE=2 -Og -ggdb -fsanitize=address
 TEST_FLAGS := $(CFLAGS) -lgtest -lgmock
 LDFLAGS := $(CFLAGS)
 
