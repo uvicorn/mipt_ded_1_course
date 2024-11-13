@@ -6,7 +6,7 @@
 #include <iostream>
 #include <string>
 #include <tuple>
-
+#include <utility>
 
 BigInt BigInt::AbsAdd(const BigInt& a, const BigInt& b){
     const auto [smaller, larger] = a.blocks_count < b.blocks_count ?
@@ -99,6 +99,7 @@ BigInt BigInt::operator+(const BigInt& b){
         case PLUS: // 4
             return BigInt::AbsSub(a, b);
     }
+    /* std::unreachable(); */
     __builtin_unreachable();
 }
 
@@ -132,6 +133,7 @@ BigInt BigInt::operator-(const BigInt& b){
             return result;
             }
     }
+    /* std::unreachable(); */
     __builtin_unreachable();
 }
 

@@ -45,7 +45,7 @@ BigInt::BigInt(BlocksType blocks, size_t blocks_count, SIGN sign) :
 
 BigInt::BigInt(std::initializer_list<UInt> blocks, SIGN sign):
     sign(sign),
-    blocks_count(blocks.size()) // TODO: оно точно будет работать перед вызовом инита???
+    blocks_count(blocks.size())
 {
     this->blocks = std::make_unique<BlocksType>(this->blocks_count);
     std::copy(blocks.begin(), blocks.end(), this->blocks.get());
@@ -55,11 +55,9 @@ BigInt::BigInt(std::initializer_list<UInt> blocks, SIGN sign):
 
 // sign operations
 void BigInt::SwapSign(){
-    this->sign = this->sign == PLUS ? MINUS : PLUS; // TODO: переписать на sign = sign ^ 1
-}
-
-void BigInt::SetSign(SIGN sign){
-    this->sign = sign;
+    /* this->sign = this->sign == PLUS ? MINUS : PLUS; */
+    this->sign = static_cast<SIGN>(static_cast<uint8_t>(this->sign) ^ 1);
+    // ахахха бля мне похуй
 }
 
 

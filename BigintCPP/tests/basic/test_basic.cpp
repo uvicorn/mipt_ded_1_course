@@ -72,6 +72,22 @@ TEST_F(BasicBigIntFixture, TestSub){
     }
 }
 
+TEST_F(BasicBigIntFixture, TestMul){
+    for (size_t index = 0; index < tests_size; index++){
+        BigIntTester& first = First_args[index];
+        BigIntTester& second = Second_args[index];
+        BigIntTester res = first * second;
+
+        EXPECT_TRUE(res == Mul_res[index])
+            << "FAILED ON TEST " << index << '\n'
+            << "[first arg:] " << first
+            << "[second arg:] " << second
+            << "expected result: " << Mul_res[index]
+            << "Actual result: " << res
+            << '\n';
+    }
+}
+
 TEST(BasicBigInt, TestCtors){
     BigIntTester b1 = BigInt({1,2,3,4,5}, PLUS);
     UInt arr[] = {1,2,3,4,5,6};

@@ -52,9 +52,9 @@ class BigInt{
         friend BigInt& operator-=(BigInt& bigint, const UInt other);
 
         // muldiv operators
-        friend BigInt operator*(const BigInt& a, const BigInt& b);
-        friend BigInt operator*(const BigInt& a, UInt b);
-        friend BigInt operator*(const BigInt& a, Int b);
+        virtual BigInt operator*(const BigInt& b);
+        virtual BigInt operator*(UInt b);
+        virtual BigInt operator*(Int b);
         friend BigInt& operator*=(BigInt& bigint, const BigInt& other);
         friend BigInt& operator*=(BigInt& bigint, const UInt b);
         friend BigInt& operator*=(BigInt& bigint, const Int b);
@@ -80,7 +80,6 @@ class BigInt{
 
         // sign functions
         void SwapSign();
-        void SetSign(SIGN sign);
         BigInt operator-(); // unary minus
 
     protected:
