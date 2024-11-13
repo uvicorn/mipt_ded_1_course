@@ -59,7 +59,7 @@ class BigInt{
         friend BigInt& operator*=(BigInt& bigint, const UInt b);
         friend BigInt& operator*=(BigInt& bigint, const Int b);
 
-        friend BigInt operator^(const BigInt& a, UInt power);
+        virtual BigInt operator^(UInt power);
         friend BigInt operator/(const BigInt& a, const BigInt& b);
 
         // comparison operators

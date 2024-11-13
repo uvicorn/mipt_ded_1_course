@@ -161,14 +161,16 @@ BigInt& operator*=(BigInt& bigint, const Int mul){
 
 // POWER
 
-BigInt operator^(const BigInt& a, UInt power){
-    BigInt result = a;
+BigInt BigInt::operator^(UInt power){
+    BigInt& a = *this;
+    BigInt result = BigInt({1}, PLUS);
+
     BigInt mul = a;
     while (power){
         if (power & 1){
-            result += mul;
+            result *= mul;
         }
-        mul *= UInt(2);
+        mul *= mul;
         power >>= 1;
     }
     return result;

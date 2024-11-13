@@ -72,6 +72,22 @@ TEST_F(BasicBigIntFixture, TestSub){
     }
 }
 
+TEST_F(BasicBigIntFixture, TestPow){
+    for (size_t index = 0; index < tests_size; index++){
+        BigIntTester& a = Pow_args[index];
+        UInt power = Pow_powers[index];
+        BigIntTester res = a ^ power;
+
+        EXPECT_TRUE(res == Pow_res[index])
+            << "FAILED ON TEST " << index << '\n'
+            << "[arg:] " << a
+            << "[power:] " << power << '\n'
+            << "expected result: " << Pow_res[index]
+            << "Actual result: " << res
+            << '\n';
+    }
+}
+
 TEST_F(BasicBigIntFixture, TestMul){
     for (size_t index = 0; index < tests_size; index++){
         BigIntTester& first = First_args[index];
@@ -98,8 +114,6 @@ TEST(BasicBigInt, TestCtors){
     auto c2 = BigInt({18446744073709551615ull, 18446744073709551615ull, 18446744073709551615ull, 18446744073709551615ull, 18446744073709551615ull, 18446744073709551615ull, 18446744073709551615ull, 18446744073709551615ull, 18446744073709551615ull, 18446744073709551615ull, 18446744073709551615ull, 18446744073709551615ull, 18446744073709551615ull, 18446744073709551615ull, 18446744073709551615ull, 1099511627775ull}, MINUS);
     auto c3 = BigIntTester(c2);
 
-    std::cerr << "EBLOID " << c1 << "\n";
-    std::cerr << "EBLOID2 " << c3 << "\n";
     EXPECT_EQ(c1, c3);
 }
 
