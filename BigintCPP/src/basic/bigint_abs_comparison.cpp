@@ -16,7 +16,7 @@ bool BigInt::AbsCmp(const BigInt& a, const BigInt& b){
     while (index && a.blocks[index-1] == b.blocks[index-1])
         index--;
 
-    return !index || a.blocks[index] == b.blocks[index];
+    return !index;
 }
 
 bool BigInt::AbsLt(const BigInt& a, const BigInt& b){
@@ -67,13 +67,13 @@ bool BigInt::AbsLt(const BigInt& a, const BigInt& b){
     asm volatile
     (
         "std\n"                                     // set direction flag for backward scanning
-        "repz cmpsq"
+        "repz cmpsq\n"
+        "cld"                                       // сбросить регистры сравнения 
         : "=@ccb" (is_lt)                           // below
         : "S"(a.blocks.get() + a.blocks_count - 1), // S - RSI
           "D"(b.blocks.get() + b.blocks_count - 1), // D - RDI
           "c"(b.blocks_count)                       // rcx - sz, need for repz as counter
     );
-    asm volatile ("cld");
 
     return is_lt;
 }

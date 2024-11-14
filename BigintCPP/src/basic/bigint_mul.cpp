@@ -46,7 +46,6 @@ BigInt BigInt::operator*(const BigInt& b) const {
 
         UInt carry = 0;
         UInt a_block = a.blocks[a_index];
-        // std::cerr << "a_index="<<a_index << '\n';
         for (size_t b_index=0; b_index < b.blocks_count; b_index++){
             UInt b_block = b.blocks[b_index];
             auto [low_res, high_res] = mul_uints(a_block, b_block);
@@ -65,10 +64,6 @@ BigInt BigInt::operator*(const BigInt& b) const {
             tmp_blocks[a_index + b_index + 1] = sum_next_block;
 
         }
-        // std::cerr << "tmp_blocks = [";
-        // for (size_t i = 0;i<new_blocks_count;i++)
-        //     std::cerr<<tmp_blocks[i] << ", ";
-        // std::cerr << "]\n";
 
         carry = 0;
         for (size_t index = 0; index < new_blocks_count; index++){
@@ -76,11 +71,6 @@ BigInt BigInt::operator*(const BigInt& b) const {
             carry |= __builtin_add_overflow(new_blocks[index], tmp_blocks[index], &new_blocks[index]);
         }
 
-
-        // std::cerr << "new_blocks = [";
-        // for (size_t i = 0;i<new_blocks_count;i++)
-        //     std::cerr<<new_blocks[i] << ", ";
-        // std::cerr << "]\n";
     }
 
     return BigInt(std::move(new_blocks), new_blocks_count, result_sign);
@@ -132,7 +122,7 @@ BigInt& operator*=(BigInt& bigint, const Int mul){
 
 // POWER
 
-BigInt BigInt::operator^(UInt power){
+BigInt BigInt::operator^(UInt power) const{
     BigInt result = BigInt({1}, PLUS);
     const BigInt& a = *this;
     BigInt mul = a;

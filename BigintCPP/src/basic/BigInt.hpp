@@ -59,8 +59,14 @@ class BigInt{
         friend BigInt& operator*=(BigInt& bigint, const UInt b);
         friend BigInt& operator*=(BigInt& bigint, const Int b);
 
-        virtual BigInt operator^(UInt power);
-        friend BigInt operator/(const BigInt& a, const BigInt& b);
+        virtual BigInt operator^(UInt power) const;
+
+        // division
+        virtual std::pair<BigInt, BigInt> divmod(const BigInt& D) const;
+
+        virtual BigInt operator/(const BigInt& other) const;
+        virtual BigInt operator/(UInt other) const;
+        virtual BigInt operator%(const BigInt& other) const;
 
         // comparison operators
         friend bool operator<(const BigInt& a, const BigInt& b);
@@ -69,10 +75,17 @@ class BigInt{
         friend bool operator<=(const BigInt& a, const BigInt& b);
         friend bool operator>=(const BigInt& a, const BigInt& b);
 
+        // bit operations
+        virtual BigInt operator<<=(UInt other);
+        virtual BigInt operator<<(UInt other) const;
+
+        // virtual BigInt operator<<=(UInt other) const;
+        // virtual BigInt operator<<(UInt other) const;
 
         // ABS arithmetic and comparison functions
         static bool AbsCmp(const BigInt& a, const BigInt& b);
         static bool AbsLt(const BigInt& a, const BigInt& b);
+        friend bool _AbsLt(const BigInt& a, const BigInt& b);
         static bool AbsGt(const BigInt& a, const BigInt& b);
 
         static BigInt AbsAdd(const BigInt& a, const BigInt& b);
