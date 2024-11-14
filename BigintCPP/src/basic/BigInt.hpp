@@ -40,21 +40,21 @@ class BigInt{
         friend void swap(BigInt& first, BigInt& second);
 
         // add operators
-        virtual BigInt operator+(const BigInt& b);
+        virtual BigInt operator+(const BigInt& b) const;
         friend BigInt operator+(const BigInt& a, const UInt b);
         friend BigInt& operator+=(BigInt& bigint, const BigInt& other);
         friend BigInt& operator+=(BigInt& bigint, const UInt other);
 
         // sub operator
-        virtual BigInt operator-(const BigInt& b);
+        virtual BigInt operator-(const BigInt& b) const;
         friend BigInt operator-(const BigInt& a, const UInt b);
         friend BigInt& operator-=(BigInt& bigint, const BigInt& other);
         friend BigInt& operator-=(BigInt& bigint, const UInt other);
 
         // muldiv operators
-        virtual BigInt operator*(const BigInt& b);
-        virtual BigInt operator*(UInt b);
-        virtual BigInt operator*(Int b);
+        virtual BigInt operator*(const BigInt& b) const;
+        virtual BigInt operator*(UInt b) const;
+        virtual BigInt operator*(Int b) const;
         friend BigInt& operator*=(BigInt& bigint, const BigInt& other);
         friend BigInt& operator*=(BigInt& bigint, const UInt b);
         friend BigInt& operator*=(BigInt& bigint, const Int b);
@@ -80,7 +80,7 @@ class BigInt{
 
         // sign functions
         void SwapSign();
-        BigInt operator-(); // unary minus
+        BigInt operator-() const; // unary minus
 
     protected:
         size_t blocks_count;

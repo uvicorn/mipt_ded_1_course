@@ -77,8 +77,9 @@ BigInt BigInt::AbsSub(const BigInt& a, const BigInt& b){
     return BigInt(std::move(new_blocks), new_blocks_count, sign);
 }
 
+
 // ADDITION
-BigInt BigInt::operator+(const BigInt& b){
+BigInt BigInt::operator+(const BigInt& b) const{
     /* a, b > 0
      * 1) a+b       = a + b
      * 2) (-a)+(-b) = -(a + b)
@@ -109,7 +110,7 @@ FORCE_INLINE constexpr uint8_t switch_sign_pair(SIGN sign1, SIGN sign2){
     return (sign1 << 4) | sign2;
 }
 
-BigInt BigInt::operator-(const BigInt& b){
+BigInt BigInt::operator-(const BigInt& b) const{
     /* a, b > 0
      * 1) a-b       = a - b
      * 2) (-a)-(-b) = b - a
@@ -141,7 +142,7 @@ BigInt BigInt::operator-(const BigInt& b){
 
 // (a) -> (-a)
 
-BigInt BigInt::operator-(){
+BigInt BigInt::operator-() const{
     BigInt copy = *this;
     copy.SwapSign();
     return copy;

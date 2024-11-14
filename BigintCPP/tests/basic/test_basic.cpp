@@ -88,6 +88,7 @@ TEST_F(BasicBigIntFixture, TestPow){
     }
 }
 
+
 TEST_F(BasicBigIntFixture, TestMul){
     for (size_t index = 0; index < tests_size; index++){
         BigIntTester& first = First_args[index];
@@ -103,6 +104,7 @@ TEST_F(BasicBigIntFixture, TestMul){
             << '\n';
     }
 }
+
 
 TEST(BasicBigInt, TestCtors){
     BigIntTester b1 = BigInt({1,2,3,4,5}, PLUS);
