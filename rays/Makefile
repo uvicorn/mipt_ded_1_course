@@ -7,7 +7,7 @@ TEST_DIR := tests
 BUILD := build
 
 
-CFLAGS := -Wall -Wextra -Wpedantic  -I $(INCLUDE_DIR) -Isrc -fpermissive -Ofast
+CFLAGS := -Wall -Wextra -Wpedantic  -I $(INCLUDE_DIR) -Isrc -fpermissive -O1 -mavx512f
 #-DDEBUG -D_FORTIFY_SOURCE=2 -Og -ggdb -std=c++23
 # DEBUG_FLAGS := -Wall -Wextra -Wpedantic  -I $(INCLUDE_DIR) -Isrc -fpermissive -DDEBUG -lstdc++ -D_FORTIFY_SOURCE=2 -Og -ggdb -fsanitize=address
 TEST_FLAGS := $(CFLAGS) -lgtest -lgmock
@@ -39,16 +39,11 @@ TEST_SOURCES := $(filter-out $(TEST_DIR)/codegen_output/%, $(TEST_SOURCES))
 TEST_OBJECTS := $(patsubst $(TEST_DIR)%.cpp, $(BUILD)/tests%.o, $(TEST_SOURCES))
 
 
-prepare_tests:
-	./tests/prepare_tests.sh
-
-tests: prepare_tests $(OBJECTS) $(TEST_OBJECTS)
+tests: $(OBJECTS) $(TEST_OBJECTS)
 	$(CC) $(OBJECTS) $(TEST_OBJECTS) $(TEST_FLAGS) -o $(BUILD)/test_runner
 
 # debug: $(OBJECTS) $(BUILD)/main.o
 # 	$(CC) $(OBJECTS) $(BUILD)/main.o $(LDFLAGS)  -o $(BUILD)/$@
-
-lib: $(OBJECTS)
 
 main: $(OBJECTS) $(BUILD)/main.o
 	$(CC) $(OBJECTS) $(BUILD)/main.o $(LDFLAGS)  -o $(BUILD)/$@

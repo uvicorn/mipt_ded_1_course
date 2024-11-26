@@ -88,6 +88,12 @@ TEST_F(BasicBigIntFixture, TestPow){
     }
 }
 
+// ТЫ СМОТРЕЛА НА МЕНЯ МИЛЫМИ ГЛАЗАМИ
+// ЭТА ПРОПОСТЬ ЧТО БЫЛА МЕЖДУ НАМИ
+// СНОВА ЗАПОЛНЯЛАСЬ ТОБОЙ
+// МНЕ УТОНУТЬ БЫЛО ЛЕГЧЕ В МОРЕ С СОЛЕНОЙ ВОДОЙ
+// ВЕСНА
+// ЛЮБОВЬ
 
 TEST_F(BasicBigIntFixture, TestMul){
     for (size_t index = 0; index < tests_size; index++){

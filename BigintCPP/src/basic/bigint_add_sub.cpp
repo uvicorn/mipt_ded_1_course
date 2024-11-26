@@ -100,6 +100,7 @@ BigInt BigInt::operator+(const BigInt& b) const{
         case PLUS: // 4
             return BigInt::AbsSub(a, b);
     }
+
     /* std::unreachable(); */
     __builtin_unreachable();
 }
@@ -123,10 +124,13 @@ BigInt BigInt::operator-(const BigInt& b) const{
     switch (signs){
         case switch_sign_pair(PLUS, PLUS): // 1
             return BigInt::AbsSub(a, b);
+
         case switch_sign_pair(MINUS, MINUS): // 2
             return BigInt::AbsSub(b, a);
+
         case switch_sign_pair(PLUS, MINUS): // 4
             return BigInt::AbsAdd(a, b);
+
         case switch_sign_pair(MINUS, PLUS): // 3
             {
             auto result = BigInt::AbsAdd(a, b);
@@ -134,6 +138,7 @@ BigInt BigInt::operator-(const BigInt& b) const{
             return result;
             }
     }
+
     /* std::unreachable(); */
     __builtin_unreachable();
 }

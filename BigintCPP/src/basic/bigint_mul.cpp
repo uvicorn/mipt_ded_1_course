@@ -9,24 +9,9 @@
 
 // MULTIPLICATION
 
-FORCE_OPTIMIZATION std::pair<UInt, UInt> mul_uints(UInt a, UInt b){
-    UInt uint_size = sizeof(UInt) * 8;
-    UInt u32_bit_size = 32;
-    UInt a_low = (a << u32_bit_size) >> u32_bit_size;
-    UInt b_low = (b << u32_bit_size) >> u32_bit_size;
-    UInt a_high = a >> u32_bit_size;
-    UInt b_high = b >> u32_bit_size;
-    UInt mid;
-    UInt carry = __builtin_add_overflow(a_high * b_low, a_low * b_high, &mid);
-
-    UInt mid_low  = (mid << u32_bit_size);
-    UInt mid_high = (mid >> u32_bit_size) | (carry << u32_bit_size); // checkout this
-
-    UInt result_low;
-    carry = __builtin_add_overflow(a_low * b_low, mid_low, &result_low);
-
-    UInt result_high = a_high * b_high + mid_high + carry;
-    return std::make_pair(result_low, result_high); // [x, y] // c = a*b = x + 2^64*y
+FORCE_INLINE FORCE_OPTIMIZATION std::pair<UInt, UInt> mul_uints(UInt a, UInt b){
+    __uint128_t result = __uint128_t(a) * __uint128_t(b);
+    return std::make_pair((result << 64) >> 64, result >> 64);
 }
 
 

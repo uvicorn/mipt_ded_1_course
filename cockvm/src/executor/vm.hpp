@@ -27,9 +27,9 @@ typedef struct {
     size_t ip = 0;
     DynamicArray<MemoryAddress> address_stack;
     DynamicArray<MemoryAddress> stack;
-} VM;
+} VMContext;
 
 
-typedef VMError(*VMHandler)(VM *, OpcodeInfo);
+typedef VMError(*VMHandler)(VMContext *, OpcodeInfo);
 
 #endif

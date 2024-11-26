@@ -1,4 +1,5 @@
 **/build/
 .o
 .so
-perf.data
+**/perf.data
+**/perf.data.old

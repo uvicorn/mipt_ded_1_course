@@ -24,13 +24,6 @@ std::pair<BigInt, BigInt> BigInt::divmod(const BigInt& D) const {
 
 
 
-
-// Я КАК ВСЕ ТОЛЬКО ДВИНУЛСЯ НА ТЕБЕ СЛИШКОМ СИЛЬНО
-// ЧТОБ ДРУГИЕ НЕ УЗНАЛИ Я СКРЫВАЛ СВОИ ГЛАЗА
-// НАД НАМИ КРУЖИТ И ТАНЦУЕТ 
-// СНЕГ ДРУГИМ НЕ ВИДНО
-// НО И ОН О НАС ЗАБУДЕТ ВЕДЬ СКОРО ПРИДЕТ ВЕСНА
-
 BigInt BigInt::operator/(UInt other) const {
     assert(other != 0);
     return *this / BigInt({other}, PLUS);

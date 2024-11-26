@@ -13,3 +13,9 @@
 - [ ] Прочитать главу книги дракона
 - [ ] SIMD инструкции
 - [ ] ПЕРВАЯ РЕАЛИЗАЦИЯ ХУЙНЯ - АПГРЕЙДИТЬ ПОТОМ
+
+## ЧИТАТЬ
+
+- https://zerotistic.blog/posts/vm-obfu/
+- Книга дракона
+- https://craftinginterpreters.com/contents.html

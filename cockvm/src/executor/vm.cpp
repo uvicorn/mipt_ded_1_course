@@ -15,7 +15,7 @@ FORCE_INLINE VMError get_vm_handler(OpcodeInfo opcode_info, VMHandler* vm_handle
     return VM_OK;
 }
 
-void execute(VM* Vm){
+void execute(VMContext* Vm){
     size_t IP = 0;
     while (Vm->ip < Vm->bytecode_size){
         VMHandler vm_handler = {};
