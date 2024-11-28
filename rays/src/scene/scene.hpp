@@ -14,8 +14,9 @@ class Scene{
     Vec3 pixel_delta_v;
     Vec3 pixel00_loc;
 
-    int samples_per_pixel = 10;
-    Coord pixel_samples_scale;  // Color scale factor for a sum of pixel samples
+    int samples_per_pixel = 100; // Count of random samples for each pixel
+    Coord pixel_samples_scale = 1.0 / samples_per_pixel;  // Color scale factor for a sum of pixel samples
+    int max_depth_bounces = 10; // Maximum number of ray bounces into scene
 
   public:
     Scene(std::ofstream& output_stream);

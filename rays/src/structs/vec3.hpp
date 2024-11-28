@@ -5,18 +5,35 @@
 #include <immintrin.h>
 #include <iostream>
 
-// TODO: проверить хуйню
-// using Coord = long double __attribute__((vector_size(16)));
-using Coord = long double;
-// typedef long double Coord __attribute__ ((vector_size (16)));
+// #include <experimental/simd>
+// namespace stdx = std::experimental;
+// using Coord = stdx::native_simd<long double>;
+
+// using Coords = stdx::native_simd<long double>;
+// using Coords = stdx::fixed_size_simd<long double, 3>;
+// using Coords = std::array<stdx::native_simd<long double>, 3>;
 
 class Vec3 {
+    using Coord = long double;
     public:
-        Coord coords[3];
+        union{
+            Coord coords[3];
+            struct {
+                Coord x;
+                Coord y;
+                Coord z;
+            };
+        };
+        // union {
+        //     Vec3D coords_vec2;
+        //     Coords coords_vec;
+        //     Coords coords;
+        // };
     public:
         // ctors
-        Vec3(__m512d&);
-        Vec3(__m512d&&);
+        // Vec3(__m512d&);
+        // Vec3(__m512d&&);
+        // Vec3(simd_ld4);
         Vec3(Coord, Coord, Coord);
         Vec3() : coords{0,0,0} {}
         // add
@@ -29,7 +46,7 @@ class Vec3 {
 
         // mul
         // Vec3& operator*=(const Vec3& other); 
-        Coord operator*(const Vec3& rhs) const; // dot product
+        Coord dot(const Vec3& rhs) const; // dot product
         // Vec3 operator*(const Vec3& b) const;
 
         //scalar mul
@@ -51,22 +68,13 @@ class Vec3 {
         Vec3 normalized() const;
 
         // output
-        Coord x() const;
-        Coord y() const;
-        Coord z() const;
         friend std::ostream& operator<<(std::ostream& out, const Vec3& v);
+
+        static Vec3 random();
+        static Vec3 random_normalized();
+        static Vec3 random(Coord min, Coord max);
+        static Vec3 random_on_hemisphere(const Vec3& normal);
 };
 
 
-inline Coord Vec3::x() const { return coords[0]; }
-inline Coord Vec3::y() const { return coords[1]; }
-inline Coord Vec3::z() const { return coords[2]; }
-// inline vec3 operator/(const vec3& v, double t) {
-//     return (1/t) * v;
-// }
-// 
-// 
-// inline vec3 unit_vector(const vec3& v) {
-//     return v / v.length();
-// }
 #endif

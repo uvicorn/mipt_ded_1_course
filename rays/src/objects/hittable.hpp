@@ -16,7 +16,7 @@ class HitRecord {
         // Sets the hit record normal vector.
         // NOTE: the parameter `outward_normal` is assumed to have unit length.
 
-        front_face = (ray.direction_vec * outward_normal) < 0;
+        front_face = ray.direction_vec.dot(outward_normal) < 0;
         this->normal = front_face ? outward_normal : -outward_normal;
     }
 };
@@ -27,7 +27,6 @@ class Hittable {
 
     virtual bool hit(const Ray& ray, Interval ray_t, HitRecord& record) const = 0;
     // virtual Hittable* clone() const = default;
-    void* operator new(size_t size){return ::operator new(size);}
 };
 
 

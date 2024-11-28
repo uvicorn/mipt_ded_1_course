@@ -1,8 +1,9 @@
 #ifndef SPHERE_H
 #define SPHERE_H
+
 #include "ray.hpp"
 #include "hittable.hpp"
-#include "structs/vec3.hpp"
+#include "utils/types.hpp"
 #include <cmath>
 
 class Sphere : public Hittable {
@@ -15,6 +16,5 @@ class Sphere : public Hittable {
     Coord radius;
 };
 
-// Coord hit_sphere(const Point3& center, Coord radius, const Ray& ray);
 
 #endif

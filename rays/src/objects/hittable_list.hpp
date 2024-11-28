@@ -20,7 +20,7 @@ class HittableList {
     void add(SharedHittable object);
     void clear();
     bool hit(const Ray& ray, Interval ray_t, HitRecord& record) const;
-    Color3 ray_color(const Ray& ray);
+    Color3 ray_color(const Ray& ray, size_t);
 };
 
 

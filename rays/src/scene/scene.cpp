@@ -17,7 +17,7 @@ void Scene::render_all(){
             Color3 pixel_color(0,0,0);
             for (int sample = 0; sample < samples_per_pixel; sample++) {
                 Ray ray = get_ray(i, j);
-                pixel_color += this->world.ray_color(ray);
+                pixel_color += this->world.ray_color(ray, max_depth_bounces);
             }
             this->drawer.write_color(pixel_samples_scale * pixel_color);
         }
@@ -31,8 +31,8 @@ Ray Scene::get_ray(size_t i, size_t j) const {
 
     auto offset = sample_square();
     auto pixel_sample = pixel00_loc
-                      + ((i + offset.x()) * pixel_delta_u)
-                      + ((j + offset.y()) * pixel_delta_v);
+                      + ((i + offset.x) * pixel_delta_u)
+                      + ((j + offset.y) * pixel_delta_v);
 
     auto ray_origin = camera_center;
     auto ray_direction = pixel_sample - ray_origin;
@@ -42,16 +42,14 @@ Ray Scene::get_ray(size_t i, size_t j) const {
 
 Vec3 Scene::sample_square() const {
     // Returns the vector to a random point in the [-.5,-.5]-[+.5,+.5] unit square.
-    return Vec3(random_double() - 0.5, random_double() - 0.5, 0);
+    return Vec3(random_coord() - 0.5, random_coord() - 0.5, 0);
 }
 
 
 void Scene::ctor_Camera(){
-    this->pixel_samples_scale = 1.0 / samples_per_pixel;
     auto focal_length = 1.0;
     auto viewport_height = 2.0;
     auto viewport_width = viewport_height * (Coord(drawer.image_width)/drawer.image_height);
-    auto camera_center = Point3(0, 0, 0);
 
     // Calculate the vectors across the horizontal and down the vertical viewport edges.
     auto viewport_u = Vec3(viewport_width, 0, 0);
@@ -72,6 +70,9 @@ void Scene::ctor_Camera(){
 // }
 
 void Scene::ctor_World(){
-    this->world.add(new Sphere(Point3(0,-100.5,-1), 100));
+    // for (int i=-5;i<5;i++){
+    //     this->world.add(new Sphere(Point3(i*1.25,0,-4), 1));
+    // }
     this->world.add(new Sphere(Point3(0,0,-1), 0.5));
+    this->world.add(new Sphere(Point3(0,-100.5,-1), 100));
 }

@@ -24,14 +24,19 @@ bool HittableList::hit(const Ray& ray, Interval ray_t, HitRecord& record) const{
 }
 
 
-Color3 HittableList::ray_color(const Ray& ray) {
+Color3 HittableList::ray_color(const Ray& ray, size_t depth) {
     HitRecord hit_record;
-    if (this->hit(ray, Interval(0, Inf), hit_record)) {
-        return 0.5 * (hit_record.normal + Color3(1,1,1));
+    if (!depth)
+        return Color3(0,0,0);
+
+    if (this->hit(ray, Interval(0.001, Inf), hit_record)) {
+        Vec3 direction = hit_record.normal + Vec3::random_normalized();
+        // Vec3 direction = Vec3::random_on_hemisphere(hit_record.normal);
+        return 0.3 * ray_color(Ray(ray.start_point, direction), depth-1);
     }
 
     Vec3 unit_direction = ray.direction_vec.normalized();
-    auto a = 0.5*(unit_direction.y() + 1.0);
+    auto a = 0.5*(unit_direction.y + 1.0);
     return (1.0-a)*Color3(1.0, 1.0, 1.0) + a*Color3(0.5, 0.7, 1.0);
 }
 
