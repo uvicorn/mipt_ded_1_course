@@ -3,6 +3,15 @@
 
 #include <fstream>
 #include "utils/types.hpp"
+#include "math.h"
+
+FORCE_INLINE Coord linear_to_gamma(Coord linear_component)
+{
+    if (linear_component > 0)
+        return std::sqrt(linear_component);
+
+    return 0;
+}
 
 class Drawer{
     public:
@@ -28,6 +37,10 @@ class Drawer{
             auto g = pixel_color.y;
             auto b = pixel_color.z;
             
+            // Apply a linear to gamma transform for gamma 2
+            r = linear_to_gamma(r);
+            g = linear_to_gamma(g);
+            b = linear_to_gamma(b);
             
             static const Interval intensity(0.000, 0.999);
             int rbyte = int(256 * intensity.clamp(r));

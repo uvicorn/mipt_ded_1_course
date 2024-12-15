@@ -42,7 +42,7 @@ Ray Scene::get_ray(size_t i, size_t j) const {
 
 Vec3 Scene::sample_square() const {
     // Returns the vector to a random point in the [-.5,-.5]-[+.5,+.5] unit square.
-    return Vec3(random_coord() - 0.5, random_coord() - 0.5, 0);
+    return Vec3(random_coord(-0.5, 0.5), random_coord(-0.5, 0.5), 0);
 }
 
 
@@ -68,11 +68,22 @@ void Scene::ctor_Camera(){
 
 // void Scene::ctor_Drawer(){
 // }
+void Scene::add(SharedHittable obj){
+    this->world.add(obj);
+}
 
-void Scene::ctor_World(){
+void Scene::ctor_World(){}
     // for (int i=-5;i<5;i++){
     //     this->world.add(new Sphere(Point3(i*1.25,0,-4), 1));
     // }
-    this->world.add(new Sphere(Point3(0,0,-1), 0.5));
-    this->world.add(new Sphere(Point3(0,-100.5,-1), 100));
-}
+    // this->world.add(new Sphere(Point3(0,0,-1), 0.5));
+    // this->world.add(new Sphere(Point3(0,-100.5,-1), 100));
+    // this->world.add(new Sphere(Point3(0,0,-1), 0.5));
+
+    // this->world.add(new Sphere(Point3(-0.5,-1,-2), 0.5));
+    // this->world.add(new Sphere(Point3(0.5,-1,-2), 0.5));
+    
+    // this->world.add(new Sphere(Point3(0,-0.25,-2), 0.5));
+    // this->world.add(new Sphere(Point3(0,0.5,-2), 0.5));
+    // this->world.add(new Sphere(Point3(0.5,-1,-2), 0.5));
+// }

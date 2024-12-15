@@ -1,9 +1,10 @@
 #include "vec3_simd.hpp"
 #include "utils/rand.hpp"
+#include "math.h"
 
 using Coord = SimdVec3::Coord;
 
-std::ostream& operator<<(std::ostream& os, const SimdVec3& v) {
+inline std::ostream& operator<<(std::ostream& os, const SimdVec3& v) {
     return os  << v.x << ' '<< v.y << ' ' << v.z;
 }
 
@@ -16,8 +17,7 @@ SimdVec3 SimdVec3::random_normalized(){
         auto p = SimdVec3::random(-1,1);
         auto lensq = p.norm_square();
         if (1e-160 < lensq && lensq <= 1)
-            return p.normalized();
-            // return p / std::sqrt(lensq);
+            return p / std::sqrt(lensq);
     }
 }
 

@@ -30,8 +30,8 @@ Color3 HittableList::ray_color(const Ray& ray, size_t depth) {
         return Color3(0,0,0);
 
     if (this->hit(ray, Interval(0.001, Inf), hit_record)) {
-        Vec3 direction = hit_record.normal + Vec3::random_normalized();
-        // Vec3 direction = Vec3::random_on_hemisphere(hit_record.normal);
+        // Vec3 direction = hit_record.normal + Vec3::random_normalized();
+        Vec3 direction = Vec3::random_on_hemisphere(hit_record.normal);
         return 0.3 * ray_color(Ray(ray.start_point, direction), depth-1);
     }
 

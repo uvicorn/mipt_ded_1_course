@@ -21,6 +21,7 @@ class Scene{
   public:
     Scene(std::ofstream& output_stream);
     void ctor_World();
+    void add(SharedHittable);
     void ctor_Camera();
     void render_all();
     Vec3 sample_square() const;

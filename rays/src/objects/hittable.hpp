@@ -3,12 +3,16 @@
 
 #include "ray.hpp"
 #include <cstddef>
-#include "structs/interval.hpp"
+#include "utils/types.hpp"
+#include <memory>
+
+class Material;
 
 class HitRecord {
   public:
     Point3 point;
     Vec3 normal;
+    std::shared_ptr<Material> material;
     Coord t;
     bool front_face;
 

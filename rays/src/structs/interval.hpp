@@ -2,6 +2,7 @@
 #define INTERVAL_H
 
 #include "utils/consts.hpp"
+#include "utils/macro.hpp"
 
 class Interval {
   public:
@@ -11,19 +12,19 @@ class Interval {
 
     Interval(Coord min, Coord max) : min(min), max(max) {}
 
-    Coord length() const {
+    FORCE_INLINE Coord length() const {
         return max - min;
     }
 
-    bool contains(Coord x) const {
+    FORCE_INLINE bool contains(Coord x) const {
         return min <= x && x <= max;
     }
 
-    bool surrounds(Coord x) const {
+    FORCE_INLINE bool surrounds(Coord x) const {
         return min < x && x < max;
     }
 
-    double clamp(double x) const {
+    Coord clamp(Coord x) const {
         if (x < min) return min;
         if (x > max) return max;
         return x;

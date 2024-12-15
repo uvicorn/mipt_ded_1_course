@@ -9,7 +9,7 @@
 #include <smmintrin.h>
 #include <iostream>
 #include <cstdlib>
-
+#include "utils/macro.hpp"
 
 // __m128 bits mask to target the floating point sign bit.
 static const __m128 SIGNMASK = _mm_castsi128_ps(_mm_set1_epi32(0x80000000));
@@ -22,30 +22,27 @@ public:
     inline SimdVec3(float x, float y, float z) : mmvalue(_mm_set_ps(0, z, y, x)) {}
     inline SimdVec3(__m128 m) : mmvalue(m) {}
 
-    /// Arithmetic operators with Vector3
-    inline SimdVec3 operator+(const SimdVec3& b) const { return _mm_add_ps(mmvalue, b.mmvalue); }
-    inline SimdVec3 operator-(const SimdVec3& b) const { return _mm_sub_ps(mmvalue, b.mmvalue); }
-    inline SimdVec3 operator*(const SimdVec3& b) const { return _mm_mul_ps(mmvalue, b.mmvalue); }
-    inline SimdVec3 operator/(const SimdVec3& b) const { return _mm_div_ps(mmvalue, b.mmvalue); }
+    #define MATH_OPERATOR(op, func)                             \
+        inline SimdVec3 operator op(float b) const {            \
+            return _mm_##func##_ps(mmvalue, _mm_set1_ps(b));    \
+        }                                                       \
+        inline SimdVec3& operator op ##=(float b) {             \
+            mmvalue = _mm_##func##_ps(mmvalue, _mm_set1_ps(b)); \
+            return *this;                                       \
+        }                                                       \
+                                                                \
+        inline SimdVec3 operator op(const SimdVec3& b) const {  \
+            return _mm_##func##_ps(mmvalue, b.mmvalue);         \
+        }                                                       \
+        inline SimdVec3& operator op ##=(const SimdVec3& b) {   \
+            mmvalue = _mm_##func##_ps(mmvalue, b.mmvalue);      \
+            return *this;                                       \
+        }
 
-    /// Assignation and arithmetic operators with Vector3
-    inline SimdVec3& operator+=(const SimdVec3& b) { mmvalue = _mm_add_ps(mmvalue, b.mmvalue); return *this; }
-    inline SimdVec3& operator-=(const SimdVec3& b) { mmvalue = _mm_sub_ps(mmvalue, b.mmvalue); return *this; }
-    inline SimdVec3& operator*=(const SimdVec3& b) { mmvalue = _mm_mul_ps(mmvalue, b.mmvalue); return *this; }
-    inline SimdVec3& operator/=(const SimdVec3& b) { mmvalue = _mm_div_ps(mmvalue, b.mmvalue); return *this; }
-
-    /// Arithmetic operators with floats
-    inline SimdVec3 operator+(float b) const { return _mm_add_ps(mmvalue, _mm_set1_ps(b)); }
-    inline SimdVec3 operator-(float b) const { return _mm_sub_ps(mmvalue, _mm_set1_ps(b)); }
-    inline SimdVec3 operator*(float b) const { return _mm_mul_ps(mmvalue, _mm_set1_ps(b)); }
-    inline SimdVec3 operator/(float b) const { return _mm_div_ps(mmvalue, _mm_set1_ps(b)); }
-
-    /// Assignation and arithmetic operators with float
-    inline SimdVec3& operator+=(float b) { mmvalue = _mm_add_ps(mmvalue, _mm_set1_ps(b)); return *this; }
-    inline SimdVec3& operator-=(float b) { mmvalue = _mm_sub_ps(mmvalue, _mm_set1_ps(b)); return *this; }
-    inline SimdVec3& operator*=(float b) { mmvalue = _mm_mul_ps(mmvalue, _mm_set1_ps(b)); return *this; }
-    inline SimdVec3& operator/=(float b) { mmvalue = _mm_div_ps(mmvalue, _mm_set1_ps(b)); return *this; }
-
+    MATH_OPERATOR(+, add)
+    MATH_OPERATOR(-, sub)
+    MATH_OPERATOR(*, mul)
+    MATH_OPERATOR(/, div)
 
     /// Equality operators
     inline bool operator==(const SimdVec3& b) const {
@@ -113,5 +110,5 @@ inline SimdVec3 operator-(float a, const SimdVec3& b) { return SimdVec3(_mm_set1
 inline SimdVec3 operator*(float a, const SimdVec3& b) { return b * a; }
 inline SimdVec3 operator/(float a, const SimdVec3& b) { return SimdVec3(_mm_set1_ps(a)) / b; }
 
-std::ostream& operator<<(std::ostream& os, const SimdVec3& v);
+inline std::ostream& operator<<(std::ostream& os, const SimdVec3& v);
 #endif
