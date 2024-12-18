@@ -1,5 +1,6 @@
 import sys
 
+
 output_file = open(sys.argv[1], 'w')
 
 out = ''

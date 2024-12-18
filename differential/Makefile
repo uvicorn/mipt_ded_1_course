@@ -9,7 +9,7 @@ BUILD := build
 
 RELEASE_FLAGS := -Ofast
 DEBUG_FLAGS := -g -Og -fno-inline-small-functions -fno-inline
-CFLAGS := -Wall -Wextra -Wpedantic  -I $(INCLUDE_DIR) -Isrc -fpermissive -std=c++17 -march=native -ffast-math $(DEBUG_FLAGS)
+CFLAGS := -Wall -Wextra -Wpedantic  -I $(INCLUDE_DIR) -Isrc -fpermissive -std=c++20 -march=native -ffast-math $(DEBUG_FLAGS)
 # -fsanitize=address -ggdb
 #-DDEBUG -D_FORTIFY_SOURCE=2 -Og -ggdb -std=c++23
 # DEBUG_FLAGS := -Wall -Wextra -Wpedantic  -I $(INCLUDE_DIR) -Isrc -fpermissive -DDEBUG -lstdc++ -D_FORTIFY_SOURCE=2 -Og -ggdb -fsanitize=address
@@ -50,11 +50,9 @@ tests: $(OBJECTS) $(TEST_OBJECTS)
 # debug: $(OBJECTS) $(BUILD)/main.o
 # 	$(CC) $(OBJECTS) $(BUILD)/main.o $(LDFLAGS)  -o $(BUILD)/$@
 
-main: codegen $(OBJECTS) $(BUILD)/main.o
+main: $(OBJECTS) $(BUILD)/main.o
 	$(CC) $(OBJECTS) $(BUILD)/main.o $(LDFLAGS)  -o $(BUILD)/$@
 
-codegen: 
-	$(shell python3.10 ./src/codegen/expr.py src/expr.hpp)
 
 $(BUILD)/%.o: $(SRC_DIR)/%.cpp
 	$(CC) $(CFLAGS) -c $< -o $@

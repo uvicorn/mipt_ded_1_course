@@ -2,51 +2,6 @@
 #include <iostream>
 #include "tokenizer.hpp"
 
-// void ebala(char* input){
-
-//     Tokenizer tokenizer;
-//     TokenizerError parse_error =  tokenizer.parse_string(input);
-//     std::cout << "PARSE_ERROR " << static_cast<int>(parse_error) << '\n';
-
-//     std::cout <<"INPUT: '"<< input << "'\n";
-//     std::cout << "OUTPUT:\n";
-//     for (Token& token : tokenizer.tokens){
-//         switch (token.type){
-//             case TokenType::MUL:
-//                 std::cout << "*" << "\n";
-//                 break;
-//             case TokenType::DIV:
-//                 std::cout << "/" << "\n";
-//                 break;
-//             case TokenType::MINUS:
-//                 std::cout << "-" << "\n";
-//                 break;
-//             case TokenType::PLUS:
-//                 std::cout << "+" << "\n";
-//                 break;
-//             case TokenType::IDENTIFIER:
-//                 std::cout << "ID "<< token.literal <<"\n";
-//                 break;
-//             case TokenType::RIGHT_PAREN:
-//                 std::cout << ")" <<"\n";
-//                 break;
-//             case TokenType::LEFT_PAREN:
-//                 std::cout << "("<< "\n";
-//                 break;
-//             case TokenType::NUMBER:
-//                 std::cout << "NUM " << token.value << "\n";
-//                 break;
-//         }
-//         // std::cout << static_cast<int>(token.type) << "\n";
-//         // std::cout << token.literal << "\n";
-//         // std::cout << "\n";
-//     }
-//     std::cout << "\n\n";
-// }
-
-// using namespace Tokenizer;
-// using namespace Parser;
-
 int main(){
     char* inputs[20] = {
         "++++++++++-123",
@@ -74,7 +29,7 @@ int main(){
 
         Parser::Parser parser(tokenizer.tokens);
         try {
-            Expr::Expr expression = parser.expression();
+            Expr::Expr* expression = parser.expression();
         }
         catch (const std::exception& e) {
             std::cout << "Exception reason:::: "<< e.what() <<"\n";

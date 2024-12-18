@@ -14,90 +14,6 @@
 
 #include "expr.hpp"
 #include "tokenizer.hpp"
-// enum class NodeType: uint8_t {
-//     CONST = 0,
-//     VAR   = 1,
-//     FUNC  = 2,
-// };
-
-// enum class FuncName: uint8_t{
-//     LN,
-
-//     ADD,
-//     SUB,
-//     MUL,
-//     DIV,
-//     UNARY_MINUS,
-// };
-
-
-// class Node;
-// using NodePtr = Node*;
-
-// class Node{
-//   public:
-//     NodeType type;
-//     std::size_t childs_count;
-//     NodePtr* childs;
-//     FuncName func_name;
-
-//     Node() = default;
-//     ~Node() = default;
-
-//     Node(FuncName func_name, Node* node1, Node* node2) :
-//         func_name(func_name),
-//         type(NodeType::FUNC)
-//     {
-//         childs = new NodePtr[2];
-//         childs[0] = node1;
-//         childs[1] = node2;
-//     }
-
-//     Node(FuncName func_name, size_t childs_count) :
-//         func_name(func_name),
-//         childs_count(childs_count),
-//         type(NodeType::FUNC)
-//     {
-//         childs = new NodePtr[childs_count];
-//     }
-
-//     Node(FuncName func_name, std::initializer_list<Node*> childs) :
-//         func_name(func_name),
-//         childs_count(childs.size()),
-//         type(NodeType::FUNC)
-//     {
-//         childs = std::move(childs);
-//     }
-
-//     Node* operator[](size_t index){
-//         return childs[index];
-//     }
-
-//     // Node& operator[](size_t index){
-//     //     return *childs[index];
-//     // }
-//     // Node operator=(Node node) = default;
-//     Node* copy(){
-//         Node* new_node = new Node();
-//         std::copy_n(childs, this->childs_count, this->childs);
-//     }
-    
-//     // Node* my_node_copy = my_node.copy_tree()
-//     Node* copy_tree(){
-//         Node* new_node = new Node(func_name, childs_count);
-//         for (size_t index = 0; index < childs_count; index++){
-//             if (childs[index] != nullptr)
-//                 new_node->childs[index] = childs[index]->copy_tree();
-//             else
-//                 new_node->childs[index] = nullptr;
-//         }
-//         return new_node;
-//     }
-//     // ~Node(){
-//     //     delete childs;
-//     // }
-// };
-
 
 
 /*
@@ -111,21 +27,24 @@ unary          -> ("-"|"+") unary | call ;
 call           -> primary ( "(" arguments? ")" )*
 arguments      -> expression ( "," expression )*
 primary        -> NUMBER | IDENTIFIER | "(" expression ")" ;
+
 */
+
 
 namespace Parser {
 
+
 using namespace Tokenizer;
 // using namespace Expr;
+using ExprPtr = Expr::Expr*;
 
 class Parser{
   private:
     const TokenList tokens;
     size_t current_t_index = 0;
   public:
-    Parser(TokenList& tokens):
-        tokens(std::move(tokens))
-    {}
+
+    Parser(TokenList& tokens): tokens(std::move(tokens)){}
 
     inline Token previous() const{
         return tokens[current_t_index - 1];
@@ -183,55 +102,55 @@ class Parser{
     //
 
     // expression -> term;
-    Expr::Expr expression(){
+    ExprPtr expression(){
         std::cout << "EXPRESSION\n";
         return term();
     }
 
     // term -> factor ( ( "-" | "+" ) factor )* ;
-    Expr::Expr term() {
+    ExprPtr term() {
         std::cout << "TERM START\n";
-        Expr::Expr expr = factor();
+        ExprPtr expr = factor();
 
         while (match({TokenType::MINUS, TokenType::PLUS})) {
             std::cout << "TERM MINUS PLUS\n";
             Token op = previous();
-            Expr::Expr right = factor();
-            expr = Expr::Binary(expr, op, right);
+            ExprPtr right = factor();
+            expr = new Expr::Binary(expr, op, right);
         }
         return expr;
     }
 
     // factor -> unary (( "/" | "*" ) unary )* ;
-    Expr::Expr factor(){
+    ExprPtr factor(){
         std::cout << "FACTOR START\n";
-        Expr::Expr expr = unary();
+        ExprPtr expr = unary();
 
         while (match({TokenType::MUL, TokenType::DIV})) {
             std::cout << "FACTOR MUL DIV\n";
             Token op = previous();
-            Expr::Expr right = unary();
-            expr = Expr::Binary(expr, op, right);
+            ExprPtr right = unary();
+            expr = new Expr::Binary(expr, op, right);
         }
         return expr;
     }
 
     // unary -> ("-"|"+") unary | call ;
-    Expr::Expr unary(){
+    ExprPtr unary(){
         std::cout << "UNARY START\n";
         // std::cout << current().type << '\n';
         if (match({TokenType::MINUS, TokenType::PLUS})){
             TokenType operator_type = previous().type;
             std::cout << "UNARY MINUS\n";
-            return Expr::Unary(operator_type, unary());
+            return new Expr::Unary(operator_type, unary());
         }
         return call();
     }
 
     //call  -> primary ( "(" arguments? ")" )*
-    Expr::Expr call(){
+    ExprPtr call(){
         std::cout << "CALL START\n";
-        Expr::Expr expr = primary();
+        ExprPtr expr = primary();
 
         // loop for case `func()(123)(544)`
         while (true){
@@ -246,8 +165,8 @@ class Parser{
     }
 
     // arguments -> expression ( "," expression )*
-    Expr::Expr get_func_args(Expr::Expr callee){
-        std::vector<Expr::Expr> args;
+    ExprPtr get_func_args(ExprPtr callee){
+        std::vector<ExprPtr> args;
         if (!check_tokentype(TokenType::RIGHT_PAREN)){
             do {
                 args.push_back(expression());
@@ -255,28 +174,29 @@ class Parser{
         }
         Token paren = consume(TokenType::RIGHT_PAREN, "Expect ')' after arguments.");
         // TODO:
-        return Expr::Call(callee, paren, args);
+        return new Expr::Call(callee, paren, args);
     }
 
     // primary -> NUMBER | IDENTIFIER | "(" expression ")" ;
-    Expr::Expr primary(){
+    ExprPtr primary(){
         std::cout << "CURRENT" << current() << '\n';
         std::cout << "PRIMARY START\n";
         if (match({TokenType::NUMBER})){
             std::cout << "PRIMARY NUMBER\n";
-            return Expr::Number(previous().value);
+            return new Expr::Number(previous().value);
         }
         if (match({TokenType::IDENTIFIER})){
             std::cout << "PRIMARY ID\n";
-            return Expr::Identifier(previous().literal);
+            return new Expr::Identifier(previous().literal);
         }
         if (match({TokenType::LEFT_PAREN})){
             std::cout << "PRIMARY LEFT_PAREN\n";
-            Expr::Expr expr = expression();
+            ExprPtr expr = expression();
             consume(TokenType::RIGHT_PAREN, "Expect ')' after expression.");
 
-            return Expr::Grouping(expr);
+            return new Expr::Grouping(expr);
         }
+
         assert(0 && !"EBALAAALSALA");
     }
 };
