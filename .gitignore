@@ -3,3 +3,7 @@
 .so
 **/perf.data
 **/perf.data.old
+
+
+**/CMakeCache.txt
+**/CMakeFiles/

@@ -1,11 +1,16 @@
 #include "tokenizer.hpp"
+#include <format>
+
 
 using namespace Tokenizer;
 
-std::ostream& operator<<(std::ostream& out, const TokenType type){
+
+
+
+std::string to_string(TokenType type){
     #define INSERT_ELEMENT(p) \
         case p:               \
-            return out << #p; \
+            return #p;        \
             break;
 
     switch(type){
@@ -21,6 +26,25 @@ std::ostream& operator<<(std::ostream& out, const TokenType type){
     }
     #undef INSERT_ELEMENT
 }
+
+
+std::ostream& operator<<(std::ostream& out, const TokenType type){
+    return out << to_string(type);
+}
+
+std::string to_string(Token token){
+    switch(token.type){
+        case TokenType::IDENTIFIER:
+            return std::format("Token(type=IDENTIFIER, value={})", token.literal);
+            break;
+        case TokenType::NUMBER:
+            return std::format("Token(type=NUMBER, value={})", token.value);
+            break;
+        default:
+            return std::format("Token(type={})", to_string(token.type));
+    }
+}
+
 
 std::ostream& operator<<(std::ostream& out, const Token token){
     switch(token.type){

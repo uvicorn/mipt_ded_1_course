@@ -60,9 +60,17 @@ class Tokenizer {
 };
 
 
+//
+//
 };
+//
+//
+
 
 std::ostream& operator<<(std::ostream& out, const Tokenizer::Token token);
 std::ostream& operator<<(std::ostream& out, const Tokenizer::TokenType value);
+
+std::string to_string(Tokenizer::Token     token);
+std::string to_string(Tokenizer::TokenType type);
 
 #endif

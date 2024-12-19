@@ -30,6 +30,7 @@ int main(){
         Parser::Parser parser(tokenizer.tokens);
         try {
             Expr::Expr* expression = parser.expression();
+            std::cout << expression->to_string() << '\n';
         }
         catch (const std::exception& e) {
             std::cout << "Exception reason:::: "<< e.what() <<"\n";
