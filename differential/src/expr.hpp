@@ -52,7 +52,8 @@ class Visitor{
 
 class Expr{
   public:
-    virtual std::string to_string() const noexcept = 0;
+    template<typename T>
+    T accept(Visitor<T>* visitor);
 };
 
 class Call : public Expr {
@@ -68,24 +69,8 @@ class Call : public Expr {
     {};
 
     template<typename T>
-    T accept(Visitor<T>& visitor){
-        return visitor.visitCall(this);
-    }
-
-    std::string to_string() const noexcept{
-        std::string args_str = "";
-        for (auto arg: args)
-            args_str += arg->to_string();
-        // std::string args_str = std::accumulate(
-        //     args.begin(), 
-        //     args.end(), 
-        //     std::string(), 
-        //     [](Expr* a, Expr* b) {
-        //         return a->to_string() + ", " + b->to_string();
-        //     }
-        // );
-
-        return std::format("Call(func={}, args=[{}])", callee->to_string(), args_str);
+    T accept(Visitor<T>* visitor){
+        return visitor->visitCall(this);
     }
 };
 
@@ -99,13 +84,10 @@ class Identifier : public Expr {
     {};
 
     template<typename T>
-    T accept(Visitor<T>& visitor){
-        return visitor.visitIdentifier(this);
+    T accept(Visitor<T>* visitor){
+        return visitor->visitIdentifier(this);
     }
 
-    std::string to_string() const noexcept{
-        return std::format("Identifier(name='{}')", name);
-    }
 };
 
 class Number : public Expr {
@@ -117,11 +99,8 @@ class Number : public Expr {
     {};
 
     template<typename T>
-    T accept(Visitor<T>& visitor){
-        return visitor.visitNumber(this);
-    }
-    std::string to_string() const noexcept{
-        return std::format("Number(value={})", value);
+    T accept(Visitor<T>* visitor){
+        return visitor->visitNumber(this);
     }
 };
 
@@ -138,12 +117,8 @@ class Binary : public Expr {
     {};
 
     template<typename T>
-    T accept(Visitor<T>& visitor){
-        return visitor.visitBinary(this);
-    }
-
-    std::string to_string() const noexcept{
-        return std::format("Binary(left={}, right={}, Op={})", left->to_string(), right->to_string(), ::to_string(op.type));
+    T accept(Visitor<T>* visitor){
+        return visitor->visitBinary(this);
     }
 
 };
@@ -159,11 +134,8 @@ class Unary : public Expr {
     {};
 
     template<typename T>
-    T accept(Visitor<T>& visitor){
-        return visitor.visitUnary(this);
-    }
-    std::string to_string() const noexcept{
-        return std::format("Unary(right={}, Op={})", right->to_string(), ::to_string(op.type));
+    T accept(Visitor<T>* visitor){
+        return visitor->visitUnary(this);
     }
 };
 
@@ -176,11 +148,8 @@ class Grouping : public Expr {
     {};
 
     template<typename T>
-    T accept(Visitor<T>& visitor){
-        return visitor.visitGrouping(this);
-    }
-    std::string to_string() const noexcept{
-        return std::format("Grouping(expr={})", expr->to_string());
+    T accept(Visitor<T>* visitor){
+        return visitor->visitGrouping(this);
     }
 };
 

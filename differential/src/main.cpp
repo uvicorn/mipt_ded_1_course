@@ -1,6 +1,7 @@
 #include "tree.hpp"
 #include <iostream>
 #include "tokenizer.hpp"
+#include "visitors/visitors.hpp"
 
 int main(){
     std::vector<const char*> inputs = {
@@ -33,7 +34,9 @@ int main(){
         Parser::Parser parser(tokenizer.tokens);
         try {
             Expr::Expr* expression = parser.expression();
-            std::cout << expression->to_string() << '\n';
+            Visitors::AstPrinter ast_printer;
+
+            std::cout << expression->accept(&ast_printer) << '\n';
         }
         catch (const std::exception& e) {
             std::cout << "Exception reason:::: "<< e.what() <<"\n";
