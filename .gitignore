@@ -4,6 +4,6 @@
 **/perf.data
 **/perf.data.old
 
-
+**/*.cmake
 **/CMakeCache.txt
 **/CMakeFiles/
