@@ -143,7 +143,7 @@ class Binary : public Expr {
     }
 
     std::string to_string() const noexcept{
-        return std::format("Binary(left={}, right={}, Op={})", left->to_string(), right->to_string(), to_string(op));
+        return std::format("Binary(left={}, right={}, Op={})", left->to_string(), right->to_string(), ::to_string(op.type));
     }
 
 };
@@ -163,7 +163,7 @@ class Unary : public Expr {
         return visitor.visitUnary(this);
     }
     std::string to_string() const noexcept{
-        return std::format("Unary(right={}, Op={})", right->to_string(), to_string(op));
+        return std::format("Unary(right={}, Op={})", right->to_string(), ::to_string(op.type));
     }
 };
 

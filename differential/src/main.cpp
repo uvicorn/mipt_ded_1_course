@@ -3,15 +3,18 @@
 #include "tokenizer.hpp"
 
 int main(){
-    char* inputs[20] = {
+    std::vector<const char*> inputs = {
         "++++++++++-123",
         "cos(x)        + (x + 2) + (x - 2)",
          "())()()()",
          "-EBLOT(EBLO(123,                 aboba, 1232112, AVOVA()      ) ) + 121",
          "aboba123 111eblot 566 abjy88yh239f9b8web vacok",
-         "class aboba ( 1,2,3 )"
+         "class aboba ( 1,2,3 )",
+         "1 * 2 + 3",
+         "+1 + 223 *345 + 456"
     };
-    for (int i = 0; i<6;i++){
+
+    for (int i = 0; i<inputs.size();i++){
         std::cout << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n";
         std::cout << "[INPUT]: '"<< inputs[i] << "'\n";
         Tokenizer::Tokenizer tokenizer;

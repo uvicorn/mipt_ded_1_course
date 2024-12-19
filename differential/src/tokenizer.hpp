@@ -53,10 +53,10 @@ using TokenList = std::vector<Token>;
 class Tokenizer {
   private:
     void parse_literal(const char* literal, size_t literal_length);
-    void push_literal(char*& literal_start, size_t literal_length);
+    void push_literal(const char*& literal_start, size_t literal_length);
   public:
     TokenList tokens;
-    TokenizerError parse_string(char* str);
+    TokenizerError parse_string(const char* str);
 };
 
 
@@ -71,6 +71,8 @@ std::ostream& operator<<(std::ostream& out, const Tokenizer::Token token);
 std::ostream& operator<<(std::ostream& out, const Tokenizer::TokenType value);
 
 std::string to_string(Tokenizer::Token     token);
+std::string to_string_op(Tokenizer::TokenType type);
 std::string to_string(Tokenizer::TokenType type);
+
 
 #endif

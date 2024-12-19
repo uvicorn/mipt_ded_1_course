@@ -2,27 +2,28 @@
 #include <format>
 
 
+//
+//
 using namespace Tokenizer;
-
-
+//
+//
 
 
 std::string to_string(TokenType type){
-    #define INSERT_ELEMENT(p) \
+    #define INSERT_ELEMENT(p,name) \
         case p:               \
-            return #p;        \
-            break;
+            return #name;
 
     switch(type){
-        INSERT_ELEMENT(TokenType::IDENTIFIER);
-        INSERT_ELEMENT(TokenType::NUMBER);
-        INSERT_ELEMENT(TokenType::MINUS);
-        INSERT_ELEMENT(TokenType::DIV);
-        INSERT_ELEMENT(TokenType::PLUS);
-        INSERT_ELEMENT(TokenType::MUL);
-        INSERT_ELEMENT(TokenType::COMMA);
-        INSERT_ELEMENT(TokenType::RIGHT_PAREN);
-        INSERT_ELEMENT(TokenType::LEFT_PAREN);
+        INSERT_ELEMENT(TokenType::IDENTIFIER, Id);
+        INSERT_ELEMENT(TokenType::NUMBER, Number);
+        INSERT_ELEMENT(TokenType::MINUS, Minus);
+        INSERT_ELEMENT(TokenType::DIV, Div);
+        INSERT_ELEMENT(TokenType::PLUS, Plus);
+        INSERT_ELEMENT(TokenType::MUL, Mul);
+        INSERT_ELEMENT(TokenType::COMMA, Comma);
+        INSERT_ELEMENT(TokenType::RIGHT_PAREN, RightParen);
+        INSERT_ELEMENT(TokenType::LEFT_PAREN, LeftParen);
     }
     #undef INSERT_ELEMENT
 }
@@ -35,10 +36,10 @@ std::ostream& operator<<(std::ostream& out, const TokenType type){
 std::string to_string(Token token){
     switch(token.type){
         case TokenType::IDENTIFIER:
-            return std::format("Token(type=IDENTIFIER, value={})", token.literal);
+            return std::format("Token(type=Id, value={})", token.literal);
             break;
         case TokenType::NUMBER:
-            return std::format("Token(type=NUMBER, value={})", token.value);
+            return std::format("Token(type=Number, value={})", token.value);
             break;
         default:
             return std::format("Token(type={})", to_string(token.type));
@@ -98,7 +99,7 @@ void Tokenizer::parse_literal(const char* literal, size_t literal_length){
     }
 }
 
-void Tokenizer::push_literal(char*& literal_start, size_t literal_length){
+void Tokenizer::push_literal(const char*& literal_start, size_t literal_length){
     if (literal_start){
         parse_literal(literal_start, literal_length);
         literal_start = nullptr;
@@ -106,9 +107,9 @@ void Tokenizer::push_literal(char*& literal_start, size_t literal_length){
 }
 
 
-TokenizerError Tokenizer::parse_string(char* str){
+TokenizerError Tokenizer::parse_string(const char* str){
     int brackets = 0;
-    char* literal_start = nullptr;
+    const char* literal_start = nullptr;
 
     while (*str){
         char symbol = *str;

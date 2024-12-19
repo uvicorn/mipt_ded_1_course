@@ -83,7 +83,6 @@ class Parser{
         assert(types.size()>0);
 
         if (is_end()){
-            std::cout << "ISEND\n";
             return false;
         }
 
@@ -103,17 +102,14 @@ class Parser{
 
     // expression -> term;
     ExprPtr expression(){
-        std::cout << "EXPRESSION\n";
         return term();
     }
 
     // term -> factor ( ( "-" | "+" ) factor )* ;
     ExprPtr term() {
-        std::cout << "TERM START\n";
         ExprPtr expr = factor();
 
         while (match({TokenType::MINUS, TokenType::PLUS})) {
-            std::cout << "TERM MINUS PLUS\n";
             Token op = previous();
             ExprPtr right = factor();
             expr = new Expr::Binary(expr, op, right);
@@ -123,11 +119,9 @@ class Parser{
 
     // factor -> unary (( "/" | "*" ) unary )* ;
     ExprPtr factor(){
-        std::cout << "FACTOR START\n";
         ExprPtr expr = unary();
 
         while (match({TokenType::MUL, TokenType::DIV})) {
-            std::cout << "FACTOR MUL DIV\n";
             Token op = previous();
             ExprPtr right = unary();
             expr = new Expr::Binary(expr, op, right);
@@ -137,25 +131,20 @@ class Parser{
 
     // unary -> ("-"|"+") unary | call ;
     ExprPtr unary(){
-        std::cout << "UNARY START\n";
-        // std::cout << current().type << '\n';
         if (match({TokenType::MINUS, TokenType::PLUS})){
-            TokenType operator_type = previous().type;
-            std::cout << "UNARY MINUS\n";
-            return new Expr::Unary(operator_type, unary());
+            Token operator_token = previous();
+            return new Expr::Unary(operator_token, unary());
         }
         return call();
     }
 
     //call  -> primary ( "(" arguments? ")" )*
     ExprPtr call(){
-        std::cout << "CALL START\n";
         ExprPtr expr = primary();
 
         // loop for case `func()(123)(544)`
         while (true){
             if (match({TokenType::LEFT_PAREN})){
-                // std::cout << 
                 expr = get_func_args(expr);
             } else {
                 break;
@@ -179,18 +168,13 @@ class Parser{
 
     // primary -> NUMBER | IDENTIFIER | "(" expression ")" ;
     ExprPtr primary(){
-        std::cout << "CURRENT" << current() << '\n';
-        std::cout << "PRIMARY START\n";
         if (match({TokenType::NUMBER})){
-            std::cout << "PRIMARY NUMBER\n";
             return new Expr::Number(previous().value);
         }
         if (match({TokenType::IDENTIFIER})){
-            std::cout << "PRIMARY ID\n";
             return new Expr::Identifier(previous().literal);
         }
         if (match({TokenType::LEFT_PAREN})){
-            std::cout << "PRIMARY LEFT_PAREN\n";
             ExprPtr expr = expression();
             consume(TokenType::RIGHT_PAREN, "Expect ')' after expression.");
 
