@@ -33,7 +33,7 @@ int main(){
 
         Parser::Parser parser(tokenizer.tokens);
         try {
-            Expr::Expr* expression = parser.expression();
+            auto expression = parser.expression();
             Visitors::AstPrinter ast_printer;
 
             std::cout << expression->accept(&ast_printer) << '\n';
