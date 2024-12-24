@@ -5,9 +5,12 @@
 #include <vector>
 #include "numeric"
 #include <format>
+#include "hash.hpp"
+#include <unordered_set>
 
 
-namespace Expr{
+namespace Expr{ // namespace
+
 
 using namespace Tokenizer;
 
@@ -32,12 +35,34 @@ struct Call {
 
 struct Identifier {
     LiteralType name;
+    HashType hash;
 
     Identifier(LiteralType name):
-        name(name)
-    {
-    };
+        name(name),
+        hash(crc32(name.data(), name.size()))
+    {};
 
+    bool operator==(const char* other) const {
+        return this->hash == crc32(other);
+    }
+};
+
+
+
+class IdentifierHasher{
+  public:
+    std::size_t operator()(const Identifier & id) const
+    {
+        return id.hash;
+    }
+};
+
+class IdentifierEqual{
+  public:
+    bool operator()(const Identifier& lhs, const Identifier& rhs) const
+    {
+        return lhs.hash == rhs.hash;
+    }
 };
 
 struct Number{
@@ -98,18 +123,19 @@ using ExprKind = std::variant<
 struct Expr {
     // SourceSpan span;
     ExprKind kind;
-    Expr(const ExprKind&& kind): kind(kind){}
-    // Expr(const Expr& expr){
-        
-    // }
-    // // operator
+    Expr(const ExprKind&& kind): kind(std::move(kind)){}
+    Expr(const Number&& num): kind(num){}
+
+    template<typename T>
+    explicit Expr(T&& expr) : kind(std::forward<T>(expr)) {}
+
 };
 
-//
-//
-};
-//
-//
+template<typename T>
+constexpr bool check_expr_type(const Expr& expr){
+    return std::holds_alternative<T>(expr.kind);
+}
+
+} // namespace
 
 #endif
-

@@ -8,9 +8,7 @@
 #include <iostream>
 
 //
-//
 namespace Tokenizer {
-//
 //
 
 
@@ -41,7 +39,6 @@ struct Token {
         LiteralType literal;
     };
 
-
     Token(NumValue value):      type(TokenType::NUMBER),     value(value){}
     Token(LiteralType literal): type(TokenType::IDENTIFIER), literal(literal){}
     Token(TokenType type):      type(type){}
@@ -62,9 +59,7 @@ class Tokenizer {
 
 
 //
-//
 };
-//
 //
 
 

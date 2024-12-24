@@ -2,11 +2,7 @@
 #include <format>
 
 
-//
-//
 using namespace Tokenizer;
-//
-//
 
 
 std::string to_string(TokenType type){
@@ -60,11 +56,7 @@ std::ostream& operator<<(std::ostream& out, const Token token){
     }
 }
 
-//
-//
-namespace Tokenizer {
-//
-//
+namespace Tokenizer { // namespace
 
 
 // 'x10aboba10221' -> {'x10aboba10221'}
@@ -134,15 +126,19 @@ TokenizerError Tokenizer::parse_string(const char* str){
                 break;
 
             case '+':
+                checkpush_literal(literal_start, str - literal_start);
                 tokens.emplace_back(TokenType::PLUS);
                 break;
             case '-':
+                checkpush_literal(literal_start, str - literal_start);
                 tokens.emplace_back(TokenType::MINUS);
                 break;
             case '/':
+                checkpush_literal(literal_start, str - literal_start);
                 tokens.emplace_back(TokenType::DIV);
                 break;
             case '*':
+                checkpush_literal(literal_start, str - literal_start);
                 tokens.emplace_back(TokenType::MUL);
                 break;
 
@@ -166,8 +162,5 @@ TokenizerError Tokenizer::parse_string(const char* str){
     return TokenizerError::OK;
 }
 
-//
-//
-};
-//
-//
+
+};// namespace
