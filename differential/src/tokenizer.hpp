@@ -52,8 +52,9 @@ using TokenList = std::vector<Token>;
 
 class Tokenizer {
   private:
-    void parse_literal(const char* literal, size_t literal_length);
-    void push_literal(const char*& literal_start, size_t literal_length);
+    bool to_push_literal = false;
+    void push_literal(const char* literal, size_t literal_length);
+    void checkpush_literal(const char* literal_start, size_t literal_length);
   public:
     TokenList tokens;
     TokenizerError parse_string(const char* str);

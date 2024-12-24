@@ -34,9 +34,9 @@ int main(){
         Parser::Parser parser(tokenizer.tokens);
         try {
             auto expression = parser.expression();
-            Visitors::AstPrinter ast_printer;
+            auto result = Visitors::AstPrinter(*expression);
 
-            std::cout << expression->accept(&ast_printer) << '\n';
+            std::cout << result << '\n';
         }
         catch (const std::exception& e) {
             std::cout << "Exception reason:::: "<< e.what() <<"\n";

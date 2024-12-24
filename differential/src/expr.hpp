@@ -12,54 +12,10 @@ namespace Expr{
 using namespace Tokenizer;
 
 
-// без этой еблени visitor ничерта не видит
-class Expr;
-class Number;
-class Identifier;
-class Binary;
-class Grouping;
-class Unary;
-class Call;
+struct Expr;
 
 
-//
-// СПАСИБО АРСЕНИЮ
-//
-template<typename Visitor>
-concept Visitable = requires(Visitor visitor) {
-    { visitor.visitNumber(std::declval<Number*>())         };
-    { visitor.visitIdentifier(std::declval<Identifier*>()) };
-    { visitor.visitUnary(std::declval<Unary*>())           };
-    { visitor.visitBinary(std::declval<Binary*>())         };
-    { visitor.visitCall(std::declval<Call*>())             };
-    { visitor.visitGrouping(std::declval<Grouping*>())     };
-};
-
-template<typename T>
-class Visitor{
-  public:
-    T visitNumber(Number* expr);
-    T visitIdentifier(Identifier* expr);
-    T visitUnary(Unary* expr);
-    T visitBinary(Binary* expr);
-    T visitCall(Call* expr);
-    T visitGrouping(Grouping* expr);
-
-    // static_assert(Visitable<Visitor<T>>,
-    //     "Visitor must implement all required visit methods");
-};
-
-
-
-class Expr{
-  public:
-    template<typename T>
-    T accept(Visitor<T>* visitor);
-};
-
-
-class Call : public Expr {
-  public:
+struct Call {
     Expr* callee;
     Token right_paren;
     std::vector<Expr*> args;
@@ -68,46 +24,33 @@ class Call : public Expr {
         callee(callee),
         right_paren(right_paren),
         args(std::move(args))
-    {};
+    {
+    };
 
-    template<typename T>
-    T accept(Visitor<T>* visitor){
-        return visitor->visitCall(this);
-    }
 };
 
 
-class Identifier : public Expr {
-  public:
+struct Identifier {
     LiteralType name;
 
     Identifier(LiteralType name):
         name(name)
-    {};
-
-    template<typename T>
-    T accept(Visitor<T>* visitor){
-        return visitor->visitIdentifier(this);
-    }
+    {
+    };
 
 };
 
-class Number : public Expr {
-  public:
+struct Number{
     NumValue value;
 
     Number(NumValue value):
         value(value)
-    {};
+    {
+    };
 
-    template<typename T>
-    T accept(Visitor<T>* visitor){
-        return visitor->visitNumber(this);
-    }
 };
 
-class Binary : public Expr {
-  public:
+struct Binary {
     Expr* left;
     Token op;
     Expr* right;
@@ -116,45 +59,57 @@ class Binary : public Expr {
         left(left),
         op(op),
         right(right)
-    {};
-
-    template<typename T>
-    T accept(Visitor<T>* visitor){
-        return visitor->visitBinary(this);
-    }
+    {
+    };
 
 };
 
-class Unary : public Expr {
-  public:
+struct Unary {
     Token op;
     Expr* right;
 
     Unary(Token op, Expr* right):
         op(op),
         right(right)
-    {};
+    {
+    };
 
-    template<typename T>
-    T accept(Visitor<T>* visitor){
-        return visitor->visitUnary(this);
-    }
 };
 
-class Grouping : public Expr {
-  public:
+struct Grouping {
     Expr* expr;
 
     Grouping(Expr* expr):
         expr(expr)
-    {};
-
-    template<typename T>
-    T accept(Visitor<T>* visitor){
-        return visitor->visitGrouping(this);
-    }
-};
-
+    {
+    };
 
 };
+
+using ExprKind = std::variant<
+    Number,
+    Identifier,
+    Binary,
+    Unary,
+    Call,
+    Grouping
+>;
+
+struct Expr {
+    // SourceSpan span;
+    ExprKind kind;
+    Expr(const ExprKind&& kind): kind(kind){}
+    // Expr(const Expr& expr){
+        
+    // }
+    // // operator
+};
+
+//
+//
+};
+//
+//
+
 #endif
+

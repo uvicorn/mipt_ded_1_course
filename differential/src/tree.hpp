@@ -112,7 +112,7 @@ class Parser{
         while (match({TokenType::MINUS, TokenType::PLUS})) {
             Token op = previous();
             ExprPtr right = factor();
-            expr = new Expr::Binary(expr, op, right);
+            expr = new Expr::Expr(Expr::Binary(expr, op, right));
         }
         return expr;
     }
@@ -124,7 +124,7 @@ class Parser{
         while (match({TokenType::MUL, TokenType::DIV})) {
             Token op = previous();
             ExprPtr right = unary();
-            expr = new Expr::Binary(expr, op, right);
+            expr = new Expr::Expr(Expr::Binary(expr, op, right));
         }
         return expr;
     }
@@ -133,7 +133,7 @@ class Parser{
     ExprPtr unary(){
         if (match({TokenType::MINUS, TokenType::PLUS})){
             Token operator_token = previous();
-            return new Expr::Unary(operator_token, unary());
+            return new Expr::Expr(Expr::Unary(operator_token, unary()));
         }
         return call();
     }
@@ -163,22 +163,22 @@ class Parser{
         }
         Token paren = consume(TokenType::RIGHT_PAREN, "Expect ')' after arguments.");
         // TODO:
-        return new Expr::Call(callee, paren, args);
+        return new Expr::Expr(Expr::Call(callee, paren, args));
     }
 
     // primary -> NUMBER | IDENTIFIER | "(" expression ")" ;
     ExprPtr primary(){
         if (match({TokenType::NUMBER})){
-            return new Expr::Number(previous().value);
+            return new Expr::Expr(Expr::Number(previous().value));
         }
         if (match({TokenType::IDENTIFIER})){
-            return new Expr::Identifier(previous().literal);
+            return new Expr::Expr(Expr::Identifier(previous().literal));
         }
         if (match({TokenType::LEFT_PAREN})){
             ExprPtr expr = expression();
             consume(TokenType::RIGHT_PAREN, "Expect ')' after expression.");
 
-            return new Expr::Grouping(expr);
+            return new Expr::Expr(Expr::Grouping(expr));
         }
 
         assert(0 && !"EBALAAALSALA");

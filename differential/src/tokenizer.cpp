@@ -70,7 +70,7 @@ namespace Tokenizer {
 // 'x10aboba10221' -> {'x10aboba10221'}
 // '10aboba123'    -> {10, 'aboba123'}
 // if argument start with number -> {NUM, ID}, if start with letter -> {ID}
-void Tokenizer::parse_literal(const char* literal, size_t literal_length){
+void Tokenizer::push_literal(const char* literal, size_t literal_length){
     assert(literal_length);
 
 
@@ -99,10 +99,10 @@ void Tokenizer::parse_literal(const char* literal, size_t literal_length){
     }
 }
 
-void Tokenizer::push_literal(const char*& literal_start, size_t literal_length){
-    if (literal_start){
-        parse_literal(literal_start, literal_length);
-        literal_start = nullptr;
+void Tokenizer::checkpush_literal(const char* literal_start, size_t literal_length){
+    if (to_push_literal){
+        push_literal(literal_start, literal_length);
+        to_push_literal = false;
     }
 }
 
@@ -115,16 +115,17 @@ TokenizerError Tokenizer::parse_string(const char* str){
         char symbol = *str;
         switch(symbol){
             case ' ':
-                push_literal(literal_start, str - literal_start);
+                checkpush_literal(literal_start, str - literal_start);
                 break;
 
             case '(':
-                push_literal(literal_start, str - literal_start);
+                checkpush_literal(literal_start, str - literal_start);
                 tokens.emplace_back(TokenType::LEFT_PAREN);
                 brackets++;
                 break;
+
             case ')':
-                push_literal(literal_start, str - literal_start);
+                checkpush_literal(literal_start, str - literal_start);
                 tokens.emplace_back(TokenType::RIGHT_PAREN);
 
                 brackets--;
@@ -146,17 +147,20 @@ TokenizerError Tokenizer::parse_string(const char* str){
                 break;
 
             case ',':
-                push_literal(literal_start, str - literal_start);
+                checkpush_literal(literal_start, str - literal_start);
                 tokens.emplace_back(TokenType::COMMA);
                 break;
+
             default:
-                if (literal_start == nullptr)
+                if (!to_push_literal){
                     literal_start = str;
+                    to_push_literal = true;
+                }
         }
         str++;
     }
 
-    push_literal(literal_start, str - literal_start);
+    checkpush_literal(literal_start, str - literal_start);
     if (brackets != 0)
         return TokenizerError::INVALID_BRACKETS_COUNT;
     return TokenizerError::OK;
