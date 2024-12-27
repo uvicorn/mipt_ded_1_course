@@ -124,10 +124,9 @@ struct Expr {
     // SourceSpan span;
     ExprKind kind;
     Expr(const ExprKind&& kind): kind(std::move(kind)){}
-    Expr(const Number&& num): kind(num){}
 
-    template<typename T>
-    explicit Expr(T&& expr) : kind(std::forward<T>(expr)) {}
+    // template<typename T>
+    // explicit Expr(T&& expr) : kind(std::forward<T>(expr)) {}
 
 };
 

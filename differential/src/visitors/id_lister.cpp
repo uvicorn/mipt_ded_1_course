@@ -20,6 +20,13 @@ void IdentifierLister::search_identifiers(const Expr::Expr* root) noexcept{
         auto group = std::get<Expr::Grouping>(root->kind);
         search_identifiers(group.expr);
     }
+    else if(check_expr_type<Expr::Call>(*root)){
+        auto call = std::get<Expr::Call>(root->kind);
+
+        search_identifiers(call.callee);
+        for (auto arg: call.args)
+            search_identifiers(arg);
+    }
 }
 
 IdList IdentifierLister::get_identifiers(const Expr::Expr* root) noexcept{
