@@ -6,6 +6,7 @@
 
 namespace Visitors{
     [[nodiscard]] std::string AstPrinter(const Expr::Expr& expr, size_t indent_size = 0);
+    [[nodiscard]] std::string ExprToLatex(const Expr::Expr& expr);
     [[nodiscard]] std::nullptr_t TreeDestroyer(Expr::Expr* root);
 
     using IdList = std::unordered_set<Expr::Identifier, Expr::IdentifierHasher, Expr::IdentifierEqual>;
@@ -18,7 +19,10 @@ namespace Visitors{
     };
 
     Expr::Expr* TreeCopier(const Expr::Expr* root);
-    Expr::Expr* NodeCopier(Expr::Expr& node);
+    Expr::Expr* NodeCopier(const Expr::Expr& node);
+
+    Expr::Expr* Differentiator(const Expr::Expr* root, const Expr::Identifier& diff_id);
+    void ArithmeticOptimizer(Expr::Expr* root);
 }
 
 

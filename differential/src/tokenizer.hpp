@@ -20,11 +20,13 @@ enum class TokenizerError {
 
 enum class TokenType {
     // Literals
-    IDENTIFIER, NUMBER,
+    IDENTIFIER,
+    NUMBER,
 
     // Single-character tokens
-    PLUS, MINUS, DIV, MUL, COMMA,
-    RIGHT_PAREN, LEFT_PAREN,
+    RIGHT_PAREN, LEFT_PAREN, COMMA,
+    DIV, MUL,
+    PLUS, MINUS
 };
 
 
@@ -67,8 +69,9 @@ std::ostream& operator<<(std::ostream& out, const Tokenizer::Token token);
 std::ostream& operator<<(std::ostream& out, const Tokenizer::TokenType value);
 
 std::string to_string(Tokenizer::Token     token);
-std::string to_string_op(Tokenizer::TokenType type);
-std::string to_string(Tokenizer::TokenType type);
+// std::string to_string_op(Tokenizer::TokenType type);
+std::string_view to_string(Tokenizer::TokenType type);
+std::string_view to_latex(Tokenizer::TokenType type);
 
 
 #endif

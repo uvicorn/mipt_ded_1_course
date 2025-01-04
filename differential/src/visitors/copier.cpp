@@ -45,6 +45,6 @@ Expr::Expr* Visitors::TreeCopier(const Expr::Expr* root){
     }, root->kind);
 }
 
-Expr::Expr* Visitors::NodeCopier(Expr::Expr& node){
+Expr::Expr* Visitors::NodeCopier(const Expr::Expr& node){
     return new Expr::Expr(node);
 }

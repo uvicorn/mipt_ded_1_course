@@ -45,6 +45,11 @@ struct Identifier {
     bool operator==(const char* other) const {
         return this->hash == crc32(other);
     }
+
+    bool operator==(const Identifier& rhs) const
+    {
+        return this->hash == rhs.hash;
+    }
 };
 
 
@@ -61,7 +66,7 @@ class IdentifierEqual{
   public:
     bool operator()(const Identifier& lhs, const Identifier& rhs) const
     {
-        return lhs.hash == rhs.hash;
+        return lhs == rhs;
     }
 };
 

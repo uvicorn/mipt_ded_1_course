@@ -5,7 +5,7 @@
 using namespace Tokenizer;
 
 
-std::string to_string(TokenType type){
+std::string_view to_string(TokenType type){
     #define INSERT_ELEMENT(p,name) \
         case p:               \
             return #name;
@@ -23,6 +23,23 @@ std::string to_string(TokenType type){
     }
     #undef INSERT_ELEMENT
 }
+
+std::string_view to_latex(TokenType type){
+    #define INSERT_ELEMENT(tokentype, str) \
+        case tokentype:                    \
+            return str;                    
+
+    switch (type){
+        INSERT_ELEMENT(TokenType::MINUS, "-")
+        INSERT_ELEMENT(TokenType::PLUS, "+")
+        INSERT_ELEMENT(TokenType::MUL, "*")
+        INSERT_ELEMENT(TokenType::DIV, "/")
+        default: return "???";
+    }
+    #undef INSERT_ELEMENT
+}
+
+
 
 
 std::ostream& operator<<(std::ostream& out, const TokenType type){

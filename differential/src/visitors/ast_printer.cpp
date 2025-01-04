@@ -14,15 +14,15 @@ namespace Visitors{ // namespace
 
 [[nodiscard]] std::string AstPrinter(const Expr::Expr& expr, size_t indent_size){
     return std::visit(overloaded{
-        [](const Expr::Number& expr) {
+        [](const Expr::Number& expr){
             return std::format("Number(value={})", expr.value);
         },
 
-        [](const Expr::Identifier& expr) {
+        [](const Expr::Identifier& expr){
             return std::format("Identifier(name='{}')", expr.name);
         },
 
-        [indent_size](const Expr::Binary& expr) {
+        [indent_size](const Expr::Binary& expr){
             std::string indent(indent_size * 4, ' ');
 
             return std::format(
@@ -34,7 +34,7 @@ namespace Visitors{ // namespace
             );
         },
 
-        [indent_size](const Expr::Unary& expr) {
+        [indent_size](const Expr::Unary& expr){
             std::string indent(indent_size * 4, ' ');
 
             return std::format(
@@ -66,7 +66,7 @@ namespace Visitors{ // namespace
             );
         },
 
-        [indent_size](const Expr::Grouping& expr) {
+        [indent_size](const Expr::Grouping& expr){
             std::string indent(indent_size * 4, ' ');
 
             return std::format("Grouping(\n{0}    expr={1}\n{0})",
