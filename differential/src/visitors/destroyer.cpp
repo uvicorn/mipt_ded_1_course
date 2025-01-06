@@ -10,7 +10,6 @@ std::nullptr_t Visitors::TreeDestroyer(Expr::Expr* root){
     if (root == nullptr)
         return nullptr;
 
-    std::cout << "TreeDestroyer: " << std::addressof(*root) << '\n';
     std::visit(overloaded{
         [](const Expr::Number& expr) {},
         [](const Expr::Identifier& expr) {},

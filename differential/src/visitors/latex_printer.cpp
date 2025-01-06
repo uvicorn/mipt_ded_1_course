@@ -33,14 +33,14 @@ namespace Visitors{
         [](const Expr::Call& expr){
             std::string args_str = "";
             if (expr.args.size() != 0){
-                for (auto arg: expr.args){
+                for (size_t arg_index = 0; arg_index < expr.args.size()-1; arg_index++){
                     args_str += std::format(
                         "{}, ",
-                        ExprToLatex(*arg)
+                        ExprToLatex(*expr.args[arg_index])
                     );
                 }
+                args_str += ExprToLatex(*expr.args[expr.args.size()-1]);
             }
-
             return std::format("{0}({1})",
                 ExprToLatex(*expr.callee),
                 args_str

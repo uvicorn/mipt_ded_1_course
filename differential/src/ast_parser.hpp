@@ -163,7 +163,7 @@ class Parser{
         }
         Token paren = consume(TokenType::RIGHT_PAREN, "Expect ')' after arguments.");
         // TODO:
-        return new Expr::Expr(Expr::Call(callee, paren, args));
+        return new Expr::Expr(Expr::Call(callee, args));
     }
 
     // primary -> NUMBER | IDENTIFIER | "(" expression ")" ;

@@ -5,8 +5,6 @@
 #include "helper.hpp"
 
 
-
-
 Expr::Expr* Visitors::TreeCopier(const Expr::Expr* root){
     if (root == nullptr)
         return nullptr;
@@ -32,10 +30,8 @@ Expr::Expr* Visitors::TreeCopier(const Expr::Expr* root){
 
         [](const Expr::Call& expr) -> Expr::Expr* {
             auto new_callee = TreeCopier(expr.callee);
-            std::vector<Expr::Expr*> new_args(expr.args.size());
-            for (size_t index = 0; index < expr.args.size(); index++)
-                new_args[index] = TreeCopier(expr.args[index]);
-            return new Expr::Expr(Expr::Call(new_callee, expr.right_paren, new_args));
+            auto new_args = Visitors::CallArgsCopier(expr.args);
+            return new Expr::Expr(Expr::Call(new_callee, new_args));
         },
 
         [](const Expr::Grouping& expr) -> Expr::Expr* {
@@ -44,6 +40,15 @@ Expr::Expr* Visitors::TreeCopier(const Expr::Expr* root){
         }
     }, root->kind);
 }
+
+
+std::vector<Expr::Expr*> Visitors::CallArgsCopier(const std::vector<Expr::Expr*>& args){
+    std::vector<Expr::Expr*> new_args(args.size());
+    for (size_t index = 0; index < args.size(); index++)
+        new_args[index] = Visitors::TreeCopier(args[index]);
+    return new_args;
+}
+
 
 Expr::Expr* Visitors::NodeCopier(const Expr::Expr& node){
     return new Expr::Expr(node);

@@ -8,6 +8,7 @@
 #include "hash.hpp"
 #include <unordered_set>
 #include <iostream>
+#include <algorithm>
 
 
 namespace Expr{ // namespace
@@ -21,32 +22,56 @@ struct Expr;
 
 struct Call {
     Expr* callee;
-    Token right_paren;
+    // Token right_paren;
     std::vector<Expr*> args;
 
-    Call(Expr* callee, Token right_paren, std::vector<Expr*>& args):
+    Call(Expr* callee, std::vector<Expr*>& args):
         callee(callee),
-        right_paren(right_paren),
+        // right_paren(right_paren),
         args(std::move(args))
     {
     };
 };
+
+namespace {
+
+template<size_t N>
+struct StringLiteral {
+    constexpr StringLiteral(const char (&str)[N]) {
+        std::copy_n(str, N, value);
+    }
+    
+    char value[N];
+};
+
+}
 
 
 struct Identifier {
     LiteralType name;
     HashType hash;
 
+    // compile-time hash
+    template<size_t N>
+    constexpr Identifier(const char (&str)[N]):
+        name(str),
+        hash(crc32_constexpr(str, N-1))
+    {}
+
     Identifier(LiteralType name):
         name(name),
         hash(crc32(name.data(), name.size()))
-    {};
+    {}
+
+
+    constexpr operator int() const {
+        return hash;
+    }
 
     bool operator==(const char* other) const {
         return this->hash == crc32(other);
     }
-
-    bool operator==(const Identifier& rhs) const
+    constexpr bool operator==(const Identifier& rhs) const
     {
         return this->hash == rhs.hash;
     }
@@ -130,19 +155,6 @@ struct Expr {
     ExprKind kind;
     Expr(const ExprKind&& kind): kind(std::move(kind)){}
 
-    void* operator new(size_t size) {
-        void* ptr = ::operator new(size);  // Вызов глобального оператора new
-        std::cout << "new Expr: " << ptr << '\n';
-        return ptr;
-    }
-
-    // Переопределение оператора delete
-    void operator delete(void* ptr) noexcept {
-        if (ptr != nullptr) {
-            std::cout << "delete Expr: " << ptr << '\n';
-            ::operator delete(ptr);  // Вызов глобального оператора delete
-        }
-    }
     // template<typename T>
     // explicit Expr(T&& expr) : kind(std::forward<T>(expr)) {}
 

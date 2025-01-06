@@ -3,14 +3,18 @@
 
 #include "expr.hpp"
 #include <unordered_set>
+#include "tokenizer.hpp"
 #include "visitors.hpp"
 #include "helper.hpp"
 #include <iostream>
+#include <variant>
 
+using Tokenizer::TokenType;
 
-namespace Visitors{
+Expr::Expr* CallDifferentiator(const Expr::Call& expr, const Expr::Identifier& diff_id);
 
-Expr::Expr* Differentiator(const Expr::Expr* root, const Expr::Identifier& diff_id){
+// не изменяет исходное дерево, создает новое, не ссылаясь на старое
+Expr::Expr* Visitors::Differentiator(const Expr::Expr* root, const Expr::Identifier& diff_id){
     if (root == nullptr)
         return nullptr;
 
@@ -40,7 +44,6 @@ Expr::Expr* Differentiator(const Expr::Expr* root, const Expr::Identifier& diff_
 
         [diff_id](const Expr::Binary& expr) -> Expr::Expr* {
             // PLUS, MINUS, DIV, MUL
-            using Tokenizer::TokenType;
 
             switch (expr.op.type){
                 // (u+v)' = u' + v'
@@ -95,15 +98,68 @@ Expr::Expr* Differentiator(const Expr::Expr* root, const Expr::Identifier& diff_
             }
         },
 
-        // TODO
         [diff_id](const Expr::Call& expr) -> Expr::Expr* {
-            return new Expr::Expr(expr);
+            return CallDifferentiator(expr, diff_id);
         },
     }, root->kind);
 }
 
+// (f(u(x)))' = f'(u(x))u'(x)
+Expr::Expr* CallDifferentiator(const Expr::Call& expr, const Expr::Identifier& diff_id){
+    assert(expr.args.size() == 1 && "Only one argument functions are supported now!");
+    assert(Expr::check_expr_type<Expr::Identifier>(*expr.callee));
 
+    auto func_id = std::get<Expr::Identifier>(expr.callee->kind);
+    // std::cout << "CALL " << func_id.name << " " << expr.args.size() << '\n';
+    auto args_copy = Visitors::CallArgsCopier(expr.args);
+    auto diff_arg = Visitors::Differentiator(expr.args[0], diff_id);
+    Expr::Expr* func_derivative = nullptr;
 
+    switch(func_id){
+        case Expr::Identifier("sin"):{
+            auto diff_func = new Expr::Expr(Expr::Identifier("cos"));
+            func_derivative = new Expr::Expr(Expr::Call(diff_func, args_copy));
+            break;
+        }
+        case Expr::Identifier("cos"):{
+            auto diff_func = new Expr::Expr(Expr::Identifier("sin"));
+            func_derivative = new Expr::Expr(
+                Expr::Unary(
+                    TokenType::MINUS,
+                    new Expr::Expr(Expr::Call(diff_func, args_copy))
+                )
+            );
+            break;
+        }
+        case Expr::Identifier("tan"):{
+            auto diff_func = new Expr::Expr(Expr::Identifier("cos"));
+            auto cos2 = new Expr::Expr(Expr::Call(diff_func, args_copy));
+            func_derivative = new Expr::Expr(
+                Expr::Binary(
+                    new Expr::Expr(Expr::Number(1)),
+                    TokenType::DIV,
+                    new Expr::Expr(Expr::Binary(cos2, TokenType::MUL, cos2))
+                )
+            );
+            break;
+        }
+        case Expr::Identifier("log"):
+            func_derivative = new Expr::Expr(
+                Expr::Binary(
+                    new Expr::Expr(Expr::Number(1)),
+                    TokenType::DIV,
+                    args_copy[0]
+                )
+            );
+            break;
+        default:
+            assert(0);
+            break;
+    }
+    auto mul_of_derivatives = new Expr::Expr(Expr::Binary(func_derivative, Tokenizer::TokenType::MUL, diff_arg));
+    return mul_of_derivatives;
 }
+
+
 
 #endif

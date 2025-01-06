@@ -88,8 +88,9 @@ namespace Visitors{ // namespace
         },
     }, expr.kind);
 
-    std::string indent(indent_size * 4, ' ');
-    return result +"\n"+ indent + "    " + "ADDRESS=" + to_hex_string(&expr)+ ")";
+    return result;
+    // std::string indent(indent_size * 4, ' ');
+    // return result +"\n"+ indent + "    " + "ADDRESS=" + to_hex_string(&expr)+ ")";
 }
 
 } // namespace

@@ -7,10 +7,10 @@
 
 int main(){
     std::vector<const char*> inputs = {
-        "----+a",
-        "------------++++++++--b",
-        "--+++++++---a",
-        "---a",
+        // "----+a",
+        // "------------++++++++--b",
+        // "--+++++++---a",
+        // "---a",
         // "-+----+++((((((((((aaaa+123))))))))))",
         // "cos(x)        + (x + 2) + (x - 2)",
         //  "())()()()",
@@ -21,9 +21,12 @@ int main(){
         //  "+1 + 223 *345 + 456",
         //  "(123+343)ln(123)",
         //  "123+456",
-         "a+b*123 + a*b + 12321*123 + (1*2 * (a) + b)*a",
+         // "a+b*123 + a*b + 12321*123 + (1*2 * (a) + b)*a",
          // "a+b*123",
-         "((((((((a))))))))",
+         // "((((((((a))))))))",
+        "sin(x*x)",
+        "sin(cos(x))",
+        "sin(x)*cos(x)"
          // "a*a*a",
          // "(a+b)*a",
         // "(a)",
@@ -59,13 +62,15 @@ int main(){
         Parser::Parser parser(tokenizer.tokens);
         try {
             auto expression = parser.expression();
-            auto differentiator = Differentiator(expression);
-            differentiator.differentiate();
-            auto results = differentiator.get_partial_derivatives();
 
             std::cout << "expr_to_latex: " << Visitors::ExprToLatex(*expression)<< "\n";
             std::cout << "prev tree\n";
             std::cout << Visitors::AstPrinter(*expression) << '\n';
+
+            auto differentiator = Differentiator(expression);
+            differentiator.differentiate();
+            auto results = differentiator.get_partial_derivatives();
+
             std::cout << "AFTER DIFF\n**********************************************\n";
             for (const auto& [diff_var, tree] : results){
                 std::cout << "\nDifferentiate by variable: " <<  diff_var.name << "\n";
