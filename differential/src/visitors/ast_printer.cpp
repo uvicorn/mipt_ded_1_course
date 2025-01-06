@@ -15,7 +15,7 @@
 
 std::string to_hex_string(const void *ptr) {
     std::stringstream ss;
-    ss << "0x" << std::hex << std::uppercase << std::setfill('0') <<  std::left << reinterpret_cast<uintptr_t>(ptr);
+    ss << "0x" << std::hex << std::setfill('0') <<  std::left << reinterpret_cast<uintptr_t>(ptr);
     return ss.str();
 }
 

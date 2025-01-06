@@ -11,98 +11,97 @@ Expr::Expr* Visitors::ArithmeticOptimizer(Expr::Expr* root){
     if (root == nullptr)
         return nullptr;
 
-    if (Expr::check_expr_type<Expr::Binary>(*root)){
-        auto binary = Expr::get_expr_kind<Expr::Binary>(*root);
+    if (
+        auto* binary = std::get_if<Expr::Binary>(&root->kind)
+    ){
+        binary->left  = ArithmeticOptimizer(binary->left);
+        binary->right = ArithmeticOptimizer(binary->right);
 
-        binary.left  = ArithmeticOptimizer(binary.left);
-        binary.right = ArithmeticOptimizer(binary.right);
+        bool left_is_num = Expr::check_expr_type<Expr::Number>(*binary->left);
+        bool right_is_num = Expr::check_expr_type<Expr::Number>(*binary->right);
 
-        bool left_is_num = Expr::check_expr_type<Expr::Number>(*binary.left);
-        bool right_is_num = Expr::check_expr_type<Expr::Number>(*binary.right);
-
-        Tokenizer::NumValue left_num = {};
-        Tokenizer::NumValue right_num = {};
+        Tokenizer::NumValue left_num = -1;
+        Tokenizer::NumValue right_num = -1;
         if (left_is_num){
-            left_num = std::get<Expr::Number>(binary.left->kind).value;
+            left_num = std::get<Expr::Number>(binary->left->kind).value;
         }
         if (right_is_num){
-            right_num = std::get<Expr::Number>(binary.right->kind).value;
+            right_num = std::get<Expr::Number>(binary->right->kind).value;
         }
 
-        bool use_left = true;
-        bool use_right= true;
-        
-        Expr::Expr* child_node = nullptr;
-        switch (binary.op.type){
-            case TokenType::PLUS:
-                if (left_is_num && left_num == 0)
-                    child_node = binary.right;
-                else if (right_is_num && right_num == 0)
-                    child_node = binary.left;
-                else
-                    break;
+        Expr::Expr* const right_node = binary->right;
+        Expr::Expr* const left_node  = binary->left;
 
-                delete root;
-                return ArithmeticOptimizer(child_node);
+        // Expr::Expr* child_node = nullptr;
+        switch (binary->op.type){
+            case TokenType::PLUS:
+                if (left_num == 0){
+                    delete binary->left;
+                    delete root;
+                    return ArithmeticOptimizer(right_node);
+                }
+                else if (right_num == 0){
+                    delete binary->right;
+                    delete root;
+                    return ArithmeticOptimizer(left_node);
+                }
+                if (left_is_num && right_is_num){
+                    TreeDestroyer(root);
+                    return new Expr::Expr(Expr::Number(left_num + right_num));
+                }
+                break;
 
             case TokenType::MINUS:
-                if (left_is_num && left_num == 0)
-                    child_node = binary.right;
-                else if (right_is_num && right_num == 0)
-                    child_node = new Expr::Expr(Expr::Unary(TokenType::MINUS, binary.left));
-                else
-                    break;
-
-                delete root;
-                return ArithmeticOptimizer(child_node);
+                if (left_num == 0){
+                    delete binary->left;
+                    delete root;
+                    Expr::Expr* child_node = new Expr::Expr(Expr::Unary(TokenType::MINUS, right_node));
+                    return ArithmeticOptimizer(child_node);
+                }
+                else if (right_num == 0){
+                    delete binary->right;
+                    delete root;
+                    return ArithmeticOptimizer(left_node);
+                }
+                if (left_is_num && right_is_num){
+                    TreeDestroyer(root);
+                    return new Expr::Expr(Expr::Number(left_num - right_num));
+                }
 
             case TokenType::MUL:
-                if (left_is_num){
-                    if (left_num == 0)
-                        child_node = new Expr::Expr(Expr::Number(0));
-                    else if (left_num == 1)
-                        child_node = binary.right;
-                    else
-                        goto MUL_RIGHT_CHECK;
-
+                if (left_num == 0 || right_num == 0){
+                    TreeDestroyer(root);
+                    return new Expr::Expr(Expr::Number(0));
+                }
+                else if (left_num == 1){
+                    delete binary->left;
                     delete root;
-                    return ArithmeticOptimizer(child_node);
+                    return ArithmeticOptimizer(right_node);
+                }
+                else if (right_num == 1){
+                    delete binary->right;
+                    delete root;
+                    return ArithmeticOptimizer(left_node);
                 }
 
-                MUL_RIGHT_CHECK:
-                if (right_is_num){
-                    if (right_num == 0)
-                        child_node = new Expr::Expr(Expr::Number(0));
-                    else if (right_num == 1)
-                        child_node = binary.left;
-                    else
-                        goto MUL_TWO_NUMS;
-
-                    delete root;
-                    return ArithmeticOptimizer(child_node);
-                }
-
-                MUL_TWO_NUMS:
                 if (left_is_num && right_is_num){
-                    return new Expr::Expr(Expr::Number(left_num * right_num));
+                    Expr::Expr* child_node = new Expr::Expr(Expr::Number(left_num * right_num));
+                    TreeDestroyer(root);
+                    return child_node;
                 }
-
                 break;
 
             case TokenType::DIV:
                 if (right_is_num){
-                    if (right_num == 0)
+                    if (right_num == 0){
                         assert(0 && "NO ZERO DIVISION");
-                    else if (right_num == 1)
-                        child_node = binary.left;
-                    else
-                        goto DIV_BREAK;
-
-                    delete root;
-                    return ArithmeticOptimizer(child_node);
+                    }
+                    else if (right_num == 1){
+                        delete binary->right;
+                        delete root;
+                        return ArithmeticOptimizer(left_node);
+                    }
                 }
-
-                DIV_BREAK:
                 break;
             default:
                 assert(0 && !"NO SUCH TOKENTYPE IN ArithmeticOptimizer");
@@ -114,27 +113,31 @@ Expr::Expr* Visitors::ArithmeticOptimizer(Expr::Expr* root){
     ){
         unary->right = ArithmeticOptimizer(unary->right);
 
+        // +a -> a
         if (unary->op.type == Expr::TokenType::PLUS){
             auto child_node = ArithmeticOptimizer(unary->right);
             delete root;
             return child_node;
         }
 
+        // --a -> a
         else if (Expr::check_expr_type<Expr::Unary>(*unary->right)){
-            auto child_node = std::get<Expr::Unary>(unary->right->kind);
-            if (child_node.op.type == Expr::TokenType::MINUS){
-                auto ret = ArithmeticOptimizer(child_node.right);
+            auto child_unary = std::get<Expr::Unary>(unary->right->kind);
+            if (child_unary.op.type == Expr::TokenType::MINUS){
+                auto result = ArithmeticOptimizer(child_unary.right);
+                delete unary->right;
                 delete root;
-                return ret;
+                return result;
             }
         }
     }
     else if (
         auto* grouping = std::get_if<Expr::Grouping>(&root->kind)
     ){
-        auto ret = ArithmeticOptimizer(grouping->expr);
+        // (a) -> a
+        auto expr = ArithmeticOptimizer(grouping->expr);
         delete root;
-        return ret;
+        return expr;
     }
     return root;
 }

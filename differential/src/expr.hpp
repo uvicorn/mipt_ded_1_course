@@ -7,6 +7,7 @@
 #include <format>
 #include "hash.hpp"
 #include <unordered_set>
+#include <iostream>
 
 
 namespace Expr{ // namespace
@@ -129,6 +130,19 @@ struct Expr {
     ExprKind kind;
     Expr(const ExprKind&& kind): kind(std::move(kind)){}
 
+    void* operator new(size_t size) {
+        void* ptr = ::operator new(size);  // Вызов глобального оператора new
+        std::cout << "new Expr: " << ptr << '\n';
+        return ptr;
+    }
+
+    // Переопределение оператора delete
+    void operator delete(void* ptr) noexcept {
+        if (ptr != nullptr) {
+            std::cout << "delete Expr: " << ptr << '\n';
+            ::operator delete(ptr);  // Вызов глобального оператора delete
+        }
+    }
     // template<typename T>
     // explicit Expr(T&& expr) : kind(std::forward<T>(expr)) {}
 
