@@ -1,0 +1,95 @@
+\usepackage[l2tabu,orthodox]{nag}
+
+\usepackage[left=15mm,right=15mm, top=20mm,bottom=20mm,bindingoffset=0cm]{geometry}
+
+\parindent=1.25cm
+
+\usepackage{indentfirst}
+\usepackage[labelsep=period]{caption}
+\usepackage{amssymb,amsmath,amsthm}
+\usepackage{fontspec}
+\usepackage{float}
+\usepackage{array}
+
+\setmainfont[Ligatures=TeX]{STIX}
+\newfontfamily{\cyrillicfont}[Ligatures=TeX]{STIX}
+\setmonofont{Fira Mono}
+\newfontfamily{\cyrillicfonttt}{Fira Mono}
+
+\usepackage{polyglossia}
+\setdefaultlanguage{russian}
+\setotherlanguage{english}
+
+\usepackage{subcaption}
+\usepackage{graphicx}
+\graphicspath{img/}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+
+\usepackage{color}
+\definecolor{darkblue}{rgb}{0,0,.75}
+\definecolor{darkred}{rgb}{.7,0,0}
+\definecolor{darkgreen}{rgb}{0,.7,0}
+
+\usepackage[normalem]{ulem}
+\setlength{\marginparwidth}{2cm}
+\usepackage[textwidth=4cm,textsize=tiny]{todonotes}
+\newcommand{\fix}[2]{{\textcolor{red}{\uwave{#1}}\todo[fancyline]{#2}}}
+\newcommand{\hl}[1]{{\textcolor{red}{#1}}}
+\newcommand{\cmd}[1]{{\ttfamily{\textbackslash #1}}}
+
+\newcommand{\vrb}[1]{\PVerb{#1}}
+\newcommand{\vrbb}[1]{\texttt{\textbackslash}\PVerb{#1}}
+
+\usepackage[
+    draft = false,
+    unicode = true,
+    colorlinks = true,
+    allcolors = blue,
+    hyperfootnotes = true
+]{hyperref}
+
+\usepackage{tikz}
+\usetikzlibrary{graphs, quotes}
+\usepackage{relsize}
+\usepackage{ytableau}
+
+%\usepackage{titlesec}
+%\titleformat{\subsection}{\normalfont\large\bfseries}{\thesubsection.}{\smallskip}{}
+\renewcommand \thesection{\Roman{section}}
+\renewcommand \thesubsection{\arabic{subsection}}
+
+\theoremstyle{plain}
+\newtheorem{theorem}{Теорема}
+\newtheorem{lemma}{Лемма}
+\newtheorem{proposition}{Утверждение}
+\newtheorem{corollary}{Следствие}
+\theoremstyle{definition}
+\newtheorem{definition}{Определение}
+\newtheorem{notation}{Обозначение}
+\newtheorem{example}{Пример}
+
+\newcounter{homework}
+\newenvironment{homework}[1]%
+{\refstepcounter{homework}%
+\subsection{#1}}%
+{\newpage}
+\newenvironment{homework*}[1]%
+{\subsection*{#1}}%
+{\newpage}
+
+\newcounter{task}
+\counterwithin{task}{homework}
+\newenvironment{task}[1]%
+{\setcounter{task}{#1}\addtocounter{task}{-1}\refstepcounter{task}%
+\par\noindent\textbf{Задача~\thetask. }}%
+{\smallskip}
+
+\newenvironment{solution}%
+{\par\noindent\textbf{Решение. }}%
+{\bigskip}
+
+\newcommand\abs[1]{\left\lvert #1 \right\rvert}
+\newcommand\ceil[1]{\left\lceil{#1}\right\rceil}
+\newcommand\floor[1]{\left\lfloor{#1}\right\rfloor}
+\newcommand{\divby}{\;\raisebox{-0.4ex}{\vdots}\;} 
+

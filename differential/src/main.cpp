@@ -11,7 +11,7 @@ int main(){
         // "------------++++++++--b",
         // "--+++++++---a",
         // "---a",
-        "cos(x)        + (x + 2) + (x - 2)",
+        // "cos(x)        + (x + 2) + (x - 2)",
         //  "())()()()",
         //  "-EBLOT(EBLO(123,                 aboba, 1232112, AVOVA()      ) ) + 121",
         //  "aboba123 111eblot 566 abjy88yh239f9b8web vacok",
@@ -25,10 +25,14 @@ int main(){
          // "((((((((a))))))))",
          // "a*a*a",
          // "(a+b)*a",
+        // "(a)",
+        // "a"
          // "a*b + b*a + 2*a*b",
-        "a*b + b*a",
-        "a*b",
-        "b*a"
+        // "a*b + b*a",
+        "a*b + 123*a",
+        // "b*a",
+        // "x*y + x*x*x - y*y + 123*x-667*y"
+        
         //  "+123 + 123 + 234 + 4534 +12 * (123 * 123 + (1* 2 +4-6))",
         //  "ln(123,log(123*(123*1233434), 434), 432)",
         //  "ln(log(), 123)"
@@ -63,13 +67,17 @@ int main(){
             std::cout << "AFTER DIFF\n**********************************************\n";
             for (const auto& [diff_var, tree] : results){
                 std::cout << "\nDifferentiate by variable: " <<  diff_var.name << "\n";
-                std::cout << Visitors::AstPrinter(*tree) << '\n';
-                std::cout << "AFTER OPTIMIZE:::::\n";
-                Visitors::ArithmeticOptimizer(tree);
                 // std::cout << Visitors::AstPrinter(*tree) << '\n';
-                std::cout << Visitors::ExprToLatex(*tree) << '\n';
+                std::cout << "AFTER OPTIMIZE:::::\n";
+                
+                auto tree_new = Visitors::ArithmeticOptimizer(tree);
+                std::cout << Visitors::AstPrinter(*tree_new) << '\n';
+                std::cout << Visitors::ExprToLatex(*tree_new) << '\n';
                 std::cout << "------------\n";
+                Visitors::TreeDestroyer(tree_new);
+                // Visitors::TreeDestroyer(tree);
             }
+            Visitors::TreeDestroyer(expression);
         }
         catch (const std::exception& e) {
             std::cout << "Exception reason:::: "<< e.what() <<"\n";

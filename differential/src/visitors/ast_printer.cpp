@@ -3,17 +3,29 @@
 #include "expr.hpp"
 #include "helper.hpp"
 #include "visitors.hpp"
+#include <memory>
+#include <iostream>
+#include <iomanip>
+#include <vector>
+
 
 //
 // https://lesleylai.info/en/ast-in-cpp-part-1-variant/
 //
+
+std::string to_hex_string(const void *ptr) {
+    std::stringstream ss;
+    ss << "0x" << std::hex << std::uppercase << std::setfill('0') <<  std::left << reinterpret_cast<uintptr_t>(ptr);
+    return ss.str();
+}
+
 
 namespace Visitors{ // namespace
 
 // К сожалению я не смог написать хороший паттерн Visitor на плюсах. Поэтому это вот это
 
 [[nodiscard]] std::string AstPrinter(const Expr::Expr& expr, size_t indent_size){
-    return std::visit(overloaded{
+    auto result = std::visit(overloaded{
         [](const Expr::Number& expr){
             return std::format("Number(value={})", expr.value);
         },
@@ -75,7 +87,9 @@ namespace Visitors{ // namespace
             );
         },
     }, expr.kind);
-}
 
+    std::string indent(indent_size * 4, ' ');
+    return result +"\n"+ indent + "    " + "ADDRESS=" + to_hex_string(&expr)+ ")";
+}
 
 } // namespace

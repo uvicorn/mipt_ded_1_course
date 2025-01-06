@@ -8,22 +8,23 @@ void IdentifierLister::search_identifiers(const Expr::Expr* root) noexcept{
         identifiers.insert(std::get<Expr::Identifier>(root->kind));
     }
     else if(check_expr_type<Expr::Unary>(*root)){
-        auto unary = std::get<Expr::Unary>(root->kind);
+        const Expr::Unary& unary = std::get<Expr::Unary>(root->kind);
         search_identifiers(unary.right);
     }
     else if(check_expr_type<Expr::Binary>(*root)){
-        auto binary = std::get<Expr::Binary>(root->kind);
+        const Expr::Binary& binary = std::get<Expr::Binary>(root->kind);
+
         search_identifiers(binary.right);
         search_identifiers(binary.left);
     }
     else if(check_expr_type<Expr::Grouping>(*root)){
-        auto group = std::get<Expr::Grouping>(root->kind);
+        const Expr::Grouping& group = std::get<Expr::Grouping>(root->kind);
         search_identifiers(group.expr);
     }
     else if(check_expr_type<Expr::Call>(*root)){
-        auto call = std::get<Expr::Call>(root->kind);
+        const Expr::Call& call = std::get<Expr::Call>(root->kind);
 
-        search_identifiers(call.callee);
+        // search_identifiers(call.callee);
         for (auto arg: call.args)
             search_identifiers(arg);
     }

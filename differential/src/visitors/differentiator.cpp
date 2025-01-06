@@ -10,10 +10,9 @@
 
 namespace Visitors{
 
-Expr::Expr* Differentiator(const Expr::Expr* root_, const Expr::Identifier& diff_id){
-    if (root_ == nullptr)
+Expr::Expr* Differentiator(const Expr::Expr* root, const Expr::Identifier& diff_id){
+    if (root == nullptr)
         return nullptr;
-    auto root = TreeCopier(root_);
 
     return std::visit(overloaded{
         [](const Expr::Number& expr) -> Expr::Expr* {
@@ -23,7 +22,7 @@ Expr::Expr* Differentiator(const Expr::Expr* root_, const Expr::Identifier& diff
         [diff_id](const Expr::Identifier& expr) -> Expr::Expr* {
             if (diff_id == expr)
                 return new Expr::Expr(Expr::Number(1));
-            else
+            else 
                 return new Expr::Expr(Expr::Number(0));
         },
 
@@ -51,6 +50,7 @@ Expr::Expr* Differentiator(const Expr::Expr* root_, const Expr::Identifier& diff
                     return new Expr::Expr(
                         Expr::Binary(Differentiator(expr.left, diff_id), expr.op.type, Differentiator(expr.right, diff_id))
                     );
+
                 // (u*v)' = u'v + uv'
                 case TokenType::MUL: {
                     auto new_right = new Expr::Expr(Expr::Binary(
@@ -80,8 +80,9 @@ Expr::Expr* Differentiator(const Expr::Expr* root_, const Expr::Identifier& diff
                         Expr::Binary(new_left, TokenType::MINUS, new_right)
                     );
                     // 1/v^2
+                    auto right_cp = TreeCopier(expr.right);
                     auto denominator = new Expr::Expr(
-                        Expr::Binary(TreeCopier(expr.right), TokenType::MUL, TreeCopier(expr.right))
+                        Expr::Binary(right_cp, TokenType::MUL, right_cp)
                     );
                     // (u/v)' = (u'v - uv') / v^2
                     return new Expr::Expr(

@@ -29,7 +29,6 @@ struct Call {
         args(std::move(args))
     {
     };
-
 };
 
 
@@ -138,6 +137,11 @@ struct Expr {
 template<typename T>
 constexpr bool check_expr_type(const Expr& expr){
     return std::holds_alternative<T>(expr.kind);
+}
+
+template<typename T>
+constexpr const T& get_expr_kind(const Expr& expr){
+    return std::get<T>(expr.kind);
 }
 
 } // namespace

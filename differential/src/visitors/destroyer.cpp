@@ -2,13 +2,15 @@
 #include "visitors.hpp"
 #include <optional>
 #include "helper.hpp"
+#include <memory>
 
 // TODO: протестить perf на версии с queue
 // https://www.geeksforgeeks.org/non-recursive-program-to-delete-an-entire-binary-tree/
-[[nodiscard]] std::nullptr_t Visitors::TreeDestroyer(Expr::Expr* root){
+std::nullptr_t Visitors::TreeDestroyer(Expr::Expr* root){
     if (root == nullptr)
         return nullptr;
 
+    std::cout << "TreeDestroyer: " << std::addressof(*root) << '\n';
     std::visit(overloaded{
         [](const Expr::Number& expr) {},
         [](const Expr::Identifier& expr) {},

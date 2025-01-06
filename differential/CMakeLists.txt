@@ -10,6 +10,9 @@ include_directories(include src)
 
 # SET(COMPILE_FLAGS "-Wall -Wextra -Wpedantic -fpermissive -march=native -ffast-math ")
 
+add_link_options(-fsanitize=address)
+add_compile_options(-fsanitize=address)
+
 add_compile_options(-Wall -Wextra -Wpedantic -fpermissive -march=native -ffast-math)
 if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
     add_compile_options(-g -Og -fno-inline-small-functions -fno-inline)
