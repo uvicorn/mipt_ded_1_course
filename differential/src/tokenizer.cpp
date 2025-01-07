@@ -17,6 +17,7 @@ std::string_view to_string(TokenType type){
         INSERT_ELEMENT(TokenType::DIV, Div);
         INSERT_ELEMENT(TokenType::PLUS, Plus);
         INSERT_ELEMENT(TokenType::MUL, Mul);
+        INSERT_ELEMENT(TokenType::POWER, Power);
         INSERT_ELEMENT(TokenType::COMMA, Comma);
         INSERT_ELEMENT(TokenType::RIGHT_PAREN, RightParen);
         INSERT_ELEMENT(TokenType::LEFT_PAREN, LeftParen);
@@ -34,6 +35,7 @@ std::string_view to_latex(TokenType type){
         INSERT_ELEMENT(TokenType::PLUS, "+")
         INSERT_ELEMENT(TokenType::MUL, "*")
         INSERT_ELEMENT(TokenType::DIV, "/")
+        INSERT_ELEMENT(TokenType::POWER, "^")
         default: return "???";
     }
     #undef INSERT_ELEMENT
@@ -157,6 +159,10 @@ TokenizerError Tokenizer::parse_string(const char* str){
             case '*':
                 checkpush_literal(literal_start, str - literal_start);
                 tokens.emplace_back(TokenType::MUL);
+                break;
+            case '^':
+                checkpush_literal(literal_start, str - literal_start);
+                tokens.emplace_back(TokenType::POWER);
                 break;
 
             case ',':

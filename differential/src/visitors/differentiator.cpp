@@ -137,7 +137,7 @@ Expr::Expr* CallDifferentiator(const Expr::Call& expr, const Expr::Identifier& d
                 Expr::Binary(
                     new Expr::Expr(Expr::Number(1)),
                     TokenType::DIV,
-                    new Expr::Expr(Expr::Binary(cos2, TokenType::MUL, cos2))
+                    new Expr::Expr(Expr::Binary(cos2, TokenType::POWER, new Expr::Expr(Expr::Number(2))))
                 )
             );
             break;

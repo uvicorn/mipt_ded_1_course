@@ -25,6 +25,7 @@ enum class TokenType {
 
     // Single-character tokens
     RIGHT_PAREN, LEFT_PAREN, COMMA,
+    POWER,
     DIV, MUL,
     PLUS, MINUS
 };

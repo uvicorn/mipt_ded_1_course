@@ -20,13 +20,50 @@
 https://craftinginterpreters.com/parsing-expressions.html#recursive-descent-parsing
 
 
-expression     -> term ;
+expression     -> term;
 term           -> factor ( ( "-" | "+" ) factor )* ;
-factor         -> unary (( "/" | "*" ) unary )* ;
+factor         -> power (( "/" | "*" ) power )* ;
+power          -> unary ( "^" unary )* ;
 unary          -> ("-"|"+") unary | call ;
 call           -> primary ( "(" arguments? ")" )*
 arguments      -> expression ( "," expression )*
 primary        -> NUMBER | IDENTIFIER | "(" expression ")" ;
+
+
+expression: term
+term:
+    | term '+' factor
+    | term '-' factor
+    | factor
+
+factor:
+    | factor '*' unary
+    | factor '/' unary
+    | unary
+
+unary:
+    | '+' unary
+    | '-' unary
+    | power
+
+power:
+    | primary '^' unary
+    | call
+
+call: primary ( "(" arguments? ")" )*
+arguments: expression ( "," expression )*
+
+primary:
+    | NUMBER
+    | IDENTIFIER
+    | "(" expression ")"
+
+unary          -> ("-"|"+") unary | call ;
+call           -> primary ( "(" arguments? ")" )*
+arguments      -> expression ( "," expression )*
+primary        -> NUMBER | IDENTIFIER | "(" expression ")" ;
+
+
 
 */
 
@@ -51,9 +88,6 @@ class Parser{
     }
 
     inline Token current() const{
-        return tokens[current_t_index];
-    }
-    inline Token current(){
         return tokens[current_t_index];
     }
 
@@ -96,6 +130,17 @@ class Parser{
         return false;
     }
 
+    inline bool match(TokenType type){
+        if (is_end()){
+            return false;
+        }
+        if (type == current().type){
+            current_t_index++;
+            return true;
+        }
+
+        return false;
+    }
     //
     // GRAMMAR IMPLEMENTATION SECTION
     //
@@ -117,7 +162,7 @@ class Parser{
         return expr;
     }
 
-    // factor -> unary (( "/" | "*" ) unary )* ;
+    // factor -> power (( "/" | "*" ) power )* ;
     ExprPtr factor(){
         ExprPtr expr = unary();
 
@@ -128,6 +173,18 @@ class Parser{
         }
         return expr;
     }
+
+    // power -> unary ( "^" unary )* ;
+    // ExprPtr power() {
+    //     ExprPtr expr = unary();
+
+    //     while (match(TokenType::POWER)) {
+    //         Token op = previous();
+    //         ExprPtr right = unary();
+    //         expr = new Expr::Expr(Expr::Binary(expr, op, right));
+    //     }
+    //     return expr;
+    // }
 
     // unary -> ("-"|"+") unary | call ;
     ExprPtr unary(){
@@ -144,7 +201,7 @@ class Parser{
 
         // loop for case `func()(123)(544)`
         while (true){
-            if (match({TokenType::LEFT_PAREN})){
+            if (match(TokenType::LEFT_PAREN)){
                 expr = get_func_args(expr);
             } else {
                 break;
@@ -159,7 +216,7 @@ class Parser{
         if (!check_tokentype(TokenType::RIGHT_PAREN)){
             do {
                 args.push_back(expression());
-            } while(match({TokenType::COMMA}));
+            } while(match(TokenType::COMMA));
         }
         Token paren = consume(TokenType::RIGHT_PAREN, "Expect ')' after arguments.");
         // TODO:
@@ -168,13 +225,13 @@ class Parser{
 
     // primary -> NUMBER | IDENTIFIER | "(" expression ")" ;
     ExprPtr primary(){
-        if (match({TokenType::NUMBER})){
+        if (match(TokenType::NUMBER)){
             return new Expr::Expr(Expr::Number(previous().value));
         }
-        if (match({TokenType::IDENTIFIER})){
+        if (match(TokenType::IDENTIFIER)){
             return new Expr::Expr(Expr::Identifier(previous().literal));
         }
-        if (match({TokenType::LEFT_PAREN})){
+        if (match(TokenType::LEFT_PAREN)){
             ExprPtr expr = expression();
             consume(TokenType::RIGHT_PAREN, "Expect ')' after expression.");
 
