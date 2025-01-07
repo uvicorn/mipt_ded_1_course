@@ -27,6 +27,7 @@ inline HashType crc32(const char *buf)
 // compile time crc32
 
 namespace {
+
 constexpr HashType _mm_crc32_u8_constexpr(HashType crc, uint8_t v)
 {
     crc ^= v;
@@ -38,14 +39,12 @@ constexpr HashType _mm_crc32_u8_constexpr(HashType crc, uint8_t v)
     }
     return crc;
 }
+
 }
 
 constexpr HashType crc32_constexpr(const char *buf, size_t len)
 {
     HashType crc = 0xFFFFFFFF;
-
-    // for (size_t i = len-1; i+1 ; i--)
-    //     crc = _mm_crc32_u8(crc, buf[i]);
 
     for (size_t i = 0; i<len ; i++)
         crc = _mm_crc32_u8_constexpr(crc, *buf++);

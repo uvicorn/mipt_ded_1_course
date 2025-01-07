@@ -7,13 +7,14 @@
 #include <iostream>
 #include <iomanip>
 #include <vector>
+#include "debug.hpp"
 
 
 //
 // https://lesleylai.info/en/ast-in-cpp-part-1-variant/
 //
 
-std::string to_hex_string(const void *ptr) {
+std::string address_to_hex(const void *ptr) {
     std::stringstream ss;
     ss << "0x" << std::hex << std::setfill('0') <<  std::left << reinterpret_cast<uintptr_t>(ptr);
     return ss.str();
@@ -88,9 +89,12 @@ namespace Visitors{ // namespace
         },
     }, expr.kind);
 
-    return result;
-    // std::string indent(indent_size * 4, ' ');
-    // return result +"\n"+ indent + "    " + "ADDRESS=" + to_hex_string(&expr)+ ")";
+    if constexpr (DEBUG){
+        std::string indent(indent_size * 4, ' ');
+        return result +"\n"+ indent + "    " + "ADDRESS=" + address_to_hex(&expr)+ ")";
+    } else {
+        return result;
+    }
 }
 
 } // namespace

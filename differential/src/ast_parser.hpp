@@ -181,7 +181,7 @@ class Parser{
             return new Expr::Expr(Expr::Grouping(expr));
         }
 
-        assert(0 && !"EBALAAALSALA");
+        assert(0 && !"No such token in grammar rules");
     }
 };
 

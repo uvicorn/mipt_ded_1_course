@@ -110,7 +110,6 @@ Expr::Expr* CallDifferentiator(const Expr::Call& expr, const Expr::Identifier& d
     assert(Expr::check_expr_type<Expr::Identifier>(*expr.callee));
 
     auto func_id = std::get<Expr::Identifier>(expr.callee->kind);
-    // std::cout << "CALL " << func_id.name << " " << expr.args.size() << '\n';
     auto args_copy = Visitors::CallArgsCopier(expr.args);
     auto diff_arg = Visitors::Differentiator(expr.args[0], diff_id);
     Expr::Expr* func_derivative = nullptr;
