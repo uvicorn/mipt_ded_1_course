@@ -7,18 +7,13 @@
 #include <format>
 #include "hash.hpp"
 #include <unordered_set>
-#include <iostream>
-#include <algorithm>
 
 
 namespace Expr{ // namespace
 
-
-using namespace Tokenizer;
-
-
 struct Expr;
 
+using namespace Tokenizer;
 
 struct Call {
     Expr* callee;
@@ -40,7 +35,7 @@ struct Identifier {
 
     // compile-time hash
     template<size_t N>
-    constexpr Identifier(const char (&str)[N]):
+    consteval Identifier(const char (&str)[N]):
         name(str),
         hash(crc32_constexpr(str, N-1))
     {}
@@ -68,7 +63,7 @@ struct Identifier {
 
 class IdentifierHasher{
   public:
-    std::size_t operator()(const Identifier & id) const
+    std::size_t operator()(const Identifier& id) const
     {
         return id.hash;
     }
@@ -97,7 +92,7 @@ struct Binary {
     Token op;
     Expr* right;
 
-    Binary(Expr* left, Token op, Expr* right):
+    constexpr Binary(Expr* left, Token op, Expr* right):
         left(left),
         op(op),
         right(right)
@@ -145,6 +140,21 @@ struct Expr {
     // template<typename T>
     // explicit Expr(T&& expr) : kind(std::forward<T>(expr)) {}
 
+    inline Expr* operator+(Expr* b){
+        return new Expr(Binary(this, TokenType::PLUS, b));
+    }
+    inline Expr* operator-(Expr* b){
+        return new Expr(Binary(this, TokenType::MINUS, b));
+    }
+    inline Expr* operator*(Expr* b){
+        return new Expr(Binary(this, TokenType::MUL, b));
+    }
+    inline Expr* operator/(Expr* b){
+        return new Expr(Binary(this, TokenType::DIV, b));
+    }
+    inline Expr* operator^(Expr* b){
+        return new Expr(Binary(this, TokenType::POWER, b));
+    }
 };
 
 template<typename T>
@@ -158,5 +168,7 @@ constexpr const T& get_expr_kind(const Expr& expr){
 }
 
 } // namespace
+
+using ExprPtr = Expr::Expr*;
 
 #endif

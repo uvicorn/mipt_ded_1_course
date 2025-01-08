@@ -20,34 +20,37 @@
 https://craftinginterpreters.com/parsing-expressions.html#recursive-descent-parsing
 
 
-expression     -> term;
-term           -> factor ( ( "-" | "+" ) factor )* ;
-factor         -> power (( "/" | "*" ) power )* ;
-power          -> unary ( "^" unary )* ;
-unary          -> ("-"|"+") unary | call ;
+expression     -> term
+term           -> factor ( ( "-" | "+" ) factor )*
+factor         -> power (( "/" | "*" ) power )*
+unary          -> ("-" | "+") unary | power
+power          -> call ( "^" unary )*
 call           -> primary ( "(" arguments? ")" )*
 arguments      -> expression ( "," expression )*
-primary        -> NUMBER | IDENTIFIER | "(" expression ")" ;
+primary        -> NUMBER | IDENTIFIER | "(" expression ")"
+*/
+
+
+/*
+https://docs.python.org/3/reference/grammar.html
+DEBUG GRAMMAR IN PUTHON STYLE:
 
 
 expression: term
 term:
-    | term '+' factor
-    | term '-' factor
+    | term ("+" | "-") factor
     | factor
 
 factor:
-    | factor '*' unary
-    | factor '/' unary
+    | factor ("*" | "/") unary
     | unary
 
 unary:
-    | '+' unary
-    | '-' unary
+    | ("+" | "-") unary
     | power
 
 power:
-    | primary '^' unary
+    | call '^' unary
     | call
 
 call: primary ( "(" arguments? ")" )*
@@ -57,14 +60,6 @@ primary:
     | NUMBER
     | IDENTIFIER
     | "(" expression ")"
-
-unary          -> ("-"|"+") unary | call ;
-call           -> primary ( "(" arguments? ")" )*
-arguments      -> expression ( "," expression )*
-primary        -> NUMBER | IDENTIFIER | "(" expression ")" ;
-
-
-
 */
 
 
@@ -174,28 +169,29 @@ class Parser{
         return expr;
     }
 
-    // power -> unary ( "^" unary )* ;
-    // ExprPtr power() {
-    //     ExprPtr expr = unary();
-
-    //     while (match(TokenType::POWER)) {
-    //         Token op = previous();
-    //         ExprPtr right = unary();
-    //         expr = new Expr::Expr(Expr::Binary(expr, op, right));
-    //     }
-    //     return expr;
-    // }
-
-    // unary -> ("-"|"+") unary | call ;
+    // unary -> ("-" | "+") unary | power
     ExprPtr unary(){
         if (match({TokenType::MINUS, TokenType::PLUS})){
             Token operator_token = previous();
             return new Expr::Expr(Expr::Unary(operator_token, unary()));
         }
-        return call();
+        return power();
     }
 
-    //call  -> primary ( "(" arguments? ")" )*
+    // power -> call ( "^" unary )*
+    ExprPtr power() {
+        ExprPtr expr = call();
+
+        while (match(TokenType::POWER)) {
+            Token op = previous();
+            ExprPtr right = unary();
+            expr = new Expr::Expr(Expr::Binary(expr, op, right));
+        }
+        return expr;
+    }
+
+
+    // call -> primary ( "(" arguments? ")" )*
     ExprPtr call(){
         ExprPtr expr = primary();
 

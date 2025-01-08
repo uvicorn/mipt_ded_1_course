@@ -9,6 +9,8 @@
 #include <iostream>
 #include <variant>
 
+#include "expr_operations.hpp"
+
 using Tokenizer::TokenType;
 
 Expr::Expr* CallDifferentiator(const Expr::Call& expr, const Expr::Identifier& diff_id);
@@ -20,14 +22,14 @@ Expr::Expr* Visitors::Differentiator(const Expr::Expr* root, const Expr::Identif
 
     return std::visit(overloaded{
         [](const Expr::Number& expr) -> Expr::Expr* {
-            return new Expr::Expr(Expr::Number(0));
+            return NUM(0);
         },
 
         [diff_id](const Expr::Identifier& expr) -> Expr::Expr* {
             if (diff_id == expr)
-                return new Expr::Expr(Expr::Number(1));
+                return NUM(1);
             else 
-                return new Expr::Expr(Expr::Number(0));
+                return NUM(0);
         },
 
         [diff_id](const Expr::Unary& expr) -> Expr::Expr* {
@@ -43,8 +45,7 @@ Expr::Expr* Visitors::Differentiator(const Expr::Expr* root, const Expr::Identif
         },
 
         [diff_id](const Expr::Binary& expr) -> Expr::Expr* {
-            // PLUS, MINUS, DIV, MUL
-
+            // PLUS, MINUS, DIV, MUL, POW
             switch (expr.op.type){
                 // (u+v)' = u' + v'
                 // (u-v)' = u' - v'
@@ -56,41 +57,35 @@ Expr::Expr* Visitors::Differentiator(const Expr::Expr* root, const Expr::Identif
 
                 // (u*v)' = u'v + uv'
                 case TokenType::MUL: {
-                    auto new_right = new Expr::Expr(Expr::Binary(
+                    auto new_right = MUL(
                         TreeCopier(expr.left),
-                        TokenType::MUL,
                         Differentiator(expr.right, diff_id)
-                    ));
-                    auto new_left = new Expr::Expr(Expr::Binary(
-                        Differentiator(expr.left, diff_id),
-                        TokenType::MUL,
-                        TreeCopier(expr.right)
-                    ));
-                    return new Expr::Expr(
-                        Expr::Binary(new_left, TokenType::PLUS, new_right)
                     );
+                    auto new_left = MUL(
+                        Differentiator(expr.left, diff_id),
+                        TreeCopier(expr.right)
+                    );
+                    return PLUS(new_left, new_right);
                 }
                 // (u/v)' = (u'v - uv') / v^2
                 case TokenType::DIV: {
                     // u'v - uv'
-                    auto new_right = new Expr::Expr(
-                        Expr::Binary(TreeCopier(expr.left), TokenType::MUL, Differentiator(expr.right, diff_id))
-                    );
-                    auto new_left = new Expr::Expr(
-                        Expr::Binary(Differentiator(expr.left, diff_id), TokenType::MUL, TreeCopier(expr.right))
-                    );
-                    auto numerator = new Expr::Expr(
-                        Expr::Binary(new_left, TokenType::MINUS, new_right)
-                    );
+                    auto new_right = MUL(TreeCopier(expr.left), Differentiator(expr.right, diff_id));
+                    auto new_left = MUL(Differentiator(expr.left, diff_id), TreeCopier(expr.right));
+                    auto numerator = MINUS(new_left, new_right);
+
                     // 1/v^2
-                    auto right_cp = TreeCopier(expr.right);
-                    auto denominator = new Expr::Expr(
-                        Expr::Binary(right_cp, TokenType::MUL, right_cp)
-                    );
+                    auto denominator = POW(TreeCopier(expr.right), NUM(2));
                     // (u/v)' = (u'v - uv') / v^2
-                    return new Expr::Expr(
-                        Expr::Binary(numerator, TokenType::DIV, denominator)
-                    );
+                    return DIV(numerator, denominator);
+                }
+                // (f^g)' = (f^g) * (f*ln(g))' = (f^g) * (f * ln(g))' = (f^g) * (gf'/f + g'ln(f))
+                case TokenType::POWER:{
+                    auto a = POW(TreeCopier(expr.left), TreeCopier(expr.right));// f^g
+                    auto b = DIV(MUL(TreeCopier(expr.right), Differentiator(expr.left, diff_id)), TreeCopier(expr.left)); // gf'/f
+                    std::vector<Expr::Expr*> ln_args{ TreeCopier(expr.left)};
+                    auto c = MUL(Differentiator(expr.right, diff_id), CALL(ID("ln"), ln_args)); // g'ln(f)
+                    return MUL(a, PLUS(b,c));
                 }
                 default:
                     assert(0);
@@ -104,6 +99,7 @@ Expr::Expr* Visitors::Differentiator(const Expr::Expr* root, const Expr::Identif
     }, root->kind);
 }
 
+
 // (f(u(x)))' = f'(u(x))u'(x)
 Expr::Expr* CallDifferentiator(const Expr::Call& expr, const Expr::Identifier& diff_id){
     assert(expr.args.size() == 1 && "Only one argument functions are supported now!");
@@ -116,46 +112,25 @@ Expr::Expr* CallDifferentiator(const Expr::Call& expr, const Expr::Identifier& d
 
     switch(func_id){
         case Expr::Identifier("sin"):{
-            auto diff_func = new Expr::Expr(Expr::Identifier("cos"));
-            func_derivative = new Expr::Expr(Expr::Call(diff_func, args_copy));
+            func_derivative = CALL(ID("cos"), args_copy);
             break;
         }
-        case Expr::Identifier("cos"):{
-            auto diff_func = new Expr::Expr(Expr::Identifier("sin"));
-            func_derivative = new Expr::Expr(
-                Expr::Unary(
-                    TokenType::MINUS,
-                    new Expr::Expr(Expr::Call(diff_func, args_copy))
-                )
-            );
+        case Expr::Identifier("cos"):
+            func_derivative = UN_MINUS(CALL(ID("sin"), args_copy));
             break;
-        }
-        case Expr::Identifier("tan"):{
-            auto diff_func = new Expr::Expr(Expr::Identifier("cos"));
-            auto cos2 = new Expr::Expr(Expr::Call(diff_func, args_copy));
-            func_derivative = new Expr::Expr(
-                Expr::Binary(
-                    new Expr::Expr(Expr::Number(1)),
-                    TokenType::DIV,
-                    new Expr::Expr(Expr::Binary(cos2, TokenType::POWER, new Expr::Expr(Expr::Number(2))))
-                )
-            );
+        
+        case Expr::Identifier("tan"):
+            func_derivative = DIV(NUM(1), POW(CALL(ID("cos"), args_copy), NUM(2)));
             break;
-        }
+        
         case Expr::Identifier("log"):
-            func_derivative = new Expr::Expr(
-                Expr::Binary(
-                    new Expr::Expr(Expr::Number(1)),
-                    TokenType::DIV,
-                    args_copy[0]
-                )
-            );
+            func_derivative = DIV(NUM(1), args_copy[0]);
             break;
         default:
             assert(0);
             break;
     }
-    auto mul_of_derivatives = new Expr::Expr(Expr::Binary(func_derivative, Tokenizer::TokenType::MUL, diff_arg));
+    auto mul_of_derivatives = MUL(func_derivative, diff_arg);
     return mul_of_derivatives;
 }
 

@@ -3,8 +3,10 @@
 #include "helper.hpp"
 #include <variant>
 
+#include "expr_operations.hpp"
 
 using Tokenizer::TokenType;
+
 
 // https://stackoverflow.com/questions/43532261/clean-way-to-simplify-a-binary-expression-tree
 Expr::Expr* Visitors::ArithmeticOptimizer(Expr::Expr* root){
@@ -47,7 +49,7 @@ Expr::Expr* Visitors::ArithmeticOptimizer(Expr::Expr* root){
                 }
                 if (left_is_num && right_is_num){
                     TreeDestroyer(root);
-                    return new Expr::Expr(Expr::Number(left_num + right_num));
+                    return NUM(left_num + right_num);
                 }
                 break;
 
@@ -71,7 +73,7 @@ Expr::Expr* Visitors::ArithmeticOptimizer(Expr::Expr* root){
             case TokenType::MUL:
                 if (left_num == 0 || right_num == 0){
                     TreeDestroyer(root);
-                    return new Expr::Expr(Expr::Number(0));
+                    return NUM(0);
                 }
                 else if (left_num == 1){
                     delete binary->left;
@@ -85,13 +87,19 @@ Expr::Expr* Visitors::ArithmeticOptimizer(Expr::Expr* root){
                 }
 
                 if (left_is_num && right_is_num){
-                    Expr::Expr* child_node = new Expr::Expr(Expr::Number(left_num * right_num));
+                    Expr::Expr* child_node = NUM(left_num * right_num);
                     TreeDestroyer(root);
                     return child_node;
                 }
                 break;
 
             case TokenType::DIV:
+                if (left_is_num){
+                    if (left_num == 0){
+                        TreeDestroyer(root);
+                        return NUM(0);
+                    }
+                }
                 if (right_is_num){
                     if (right_num == 0){
                         assert(0 && "NO ZERO DIVISION");
@@ -103,6 +111,10 @@ Expr::Expr* Visitors::ArithmeticOptimizer(Expr::Expr* root){
                     }
                 }
                 break;
+
+            case TokenType::POWER:
+                return root;
+
             default:
                 assert(0 && !"NO SUCH TOKENTYPE IN ArithmeticOptimizer");
         }
