@@ -4,8 +4,8 @@
 
 
 int main(){
-    while (true){
-        std::string input;
+    std::string input;
+    while (input != "EOF"){
         std::getline(std::cin, input);
         std::cout << "Expression: " << input << '\n';
 
