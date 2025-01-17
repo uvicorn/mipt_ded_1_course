@@ -4,6 +4,11 @@
 **/perf.data
 **/perf.data.old
 
+**/.ninja_deps
+**/.ninja_log
+**/*.ninja
+**/cmake_install.cmake
+
 **/*.cmake
 **/CMakeCache.txt
 **/CMakeFiles/

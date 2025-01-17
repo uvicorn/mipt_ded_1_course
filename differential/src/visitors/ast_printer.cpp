@@ -91,7 +91,11 @@ namespace Visitors{ // namespace
 
     if constexpr (DEBUG){
         std::string indent(indent_size * 4, ' ');
-        return result +"\n"+ indent + "    " + "ADDRESS=" + address_to_hex(&expr)+ ")";
+        return
+            result + "\n" +
+            indent + "    " + "ADDRESS= " + address_to_hex(&expr) + "\n" +
+            indent + "    " + "SIZE= " + std::to_string(sizeof(expr.kind));
+            ")";
     } else {
         return result;
     }
